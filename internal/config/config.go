@@ -8,6 +8,12 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
+const (
+	EnvLocal = "local"
+	EnvDev   = "dev"
+	EnvProd  = "prod"
+)
+
 type Config struct {
 	Env  string           `yaml:"env" env-default:"local"`
 	HTTP HTTPServerConfig `yaml:"http_server"`

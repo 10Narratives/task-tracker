@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"log/slog"
 
 	"github.com/10Narratives/task-tracker/internal/config"
+	"github.com/10Narratives/task-tracker/internal/logger"
 	"github.com/joho/godotenv"
 )
 
@@ -14,9 +15,10 @@ func main() {
 	}
 
 	cfg := config.MustLoad()
-	fmt.Println(cfg)
 
-	// TODO: Initialize logger
+	logger := logger.MustLogger(cfg.Env)
+	logger.Info("Start up task-tracker", slog.String("env", cfg.Env))
+	logger.Debug("Debug messages are enabled")
 
 	// TODO: Initialize storage
 
