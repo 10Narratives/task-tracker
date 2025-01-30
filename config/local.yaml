@@ -4,3 +4,4 @@ http_server:
   port: "8000"
   timeout: 4s
   idle_timeout: 60s
+  file_server_path: "./web"

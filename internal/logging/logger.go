@@ -8,6 +8,20 @@ import (
 	"github.com/10Narratives/task-tracker/internal/config"
 )
 
+// MustLogger initializes and returns a structured logger based on the provided environment.
+//
+// The logging format and log level are determined by the environment:
+//   - Local (config.EnvLocal): Text format with Debug level.
+//   - Development (config.EnvDev): JSON format with Debug level.
+//   - Production (config.EnvProd): JSON format with Info level.
+//
+// If an unknown environment is provided, the function logs a fatal error and terminates the program.
+//
+// Parameters:
+//   - env: The runtime environment (expected values: config.EnvLocal, config.EnvDev, config.EnvProd).
+//
+// Returns:
+//   - *slog.Logger: Configured logger instance.
 func MustLogger(env string) *slog.Logger {
 	var logger *slog.Logger
 

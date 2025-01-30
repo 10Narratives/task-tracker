@@ -19,7 +19,7 @@ func main() {
 		log.Fatal("Can not load environment variables.")
 	}
 
-	cfg := config.MustLoad()
+	cfg := config.MustConfig()
 
 	logger := logging.MustLogger(cfg.Env)
 	logger.Info("Start up task-tracker",
@@ -30,14 +30,12 @@ func main() {
 
 	// TODO: Initialize storage
 
-	webDir := "./web"
-
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
 	router.Use(mw_logger.New(logger))
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
-	router.Handle("/*", http.StripPrefix("/", http.FileServer(http.Dir(webDir))))
+	router.Handle("/*", http.StripPrefix("/", http.FileServer(http.Dir(cfg.HTTP.FileServerPath))))
 
 	fullAddr := cfg.HTTP.Address + ":" + cfg.HTTP.Port
 	if err := http.ListenAndServe(fullAddr, router); err != nil {
