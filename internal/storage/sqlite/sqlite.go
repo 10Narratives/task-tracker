@@ -22,7 +22,7 @@ func New(driver, dsn string) (*Storage, error) {
 	stmt, err := db.Prepare(`
 	CREATE TABLE IF NOT EXISTS scheduler (
     	id INTEGER PRIMARY KEY AUTOINCREMENT,
-    	date INTEGER NOT NULL,
+    	date TEXT NOT NULL,
     	title TEXT NOT NULL,
     	comment TEXT,
     	repeat TEXT CHECK(LENGTH(repeat) <= 128)
