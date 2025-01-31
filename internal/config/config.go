@@ -25,8 +25,20 @@ type Config struct {
 	// Env specifies the environment in which the application is running (e.g local, dev, prod).
 	Env string `yaml:"env" env-default:"local"`
 
+	// Storage contains the configuration settings for the database
+	Storage StorageConfig `yaml:"storage"`
+
 	// HTTP contains the configuration settings for the HTTP server.
 	HTTP HTTPServerConfig `yaml:"http_server"`
+}
+
+// StorageConfig holds configuration values for the storage
+type StorageConfig struct {
+	// DriverName specifies driver for database
+	DriverName string `yaml:"driver" env-default:"sqlite3"`
+
+	// DataSourceName defines source name for the database
+	DataSourceName string `yaml:"dsn" env-default:"scheduler.db"`
 }
 
 // HTTPServerConfig holds configuration values for the HTTP server.
