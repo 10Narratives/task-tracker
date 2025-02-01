@@ -17,8 +17,6 @@ func New(driver, dsn string) (*Storage, error) {
 		return nil, fmt.Errorf("storage.sqlite.New: %w", err)
 	}
 
-	fmt.Println("!")
-
 	stmt, err := db.Prepare(`
 	CREATE TABLE IF NOT EXISTS scheduler (
     	id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,7 +29,6 @@ func New(driver, dsn string) (*Storage, error) {
 	CREATE INDEX IF NOR EXISTS idx_scheduler_date ON scheduler(date);
 	`)
 
-	fmt.Println("!")
 	if err != nil {
 		return nil, fmt.Errorf("storage.sqlite.New: %w", err)
 	}
