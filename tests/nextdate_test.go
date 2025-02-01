@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/10Narratives/task-tracker/internal/service"
+	"github.com/10Narratives/task-tracker/internal/services"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -34,7 +34,7 @@ func TestDayRepeat(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			got, err := service.NextDate(tt.now, tt.date, tt.repeat)
+			got, err := services.NextDate(tt.now, tt.date, tt.repeat)
 
 			if tt.expectErr {
 				require.Error(t, err, "An error was expected, but there was none")
@@ -77,7 +77,7 @@ func TestYearRepeat(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			got, err := service.NextDate(tt.now, tt.date, tt.repeat)
+			got, err := services.NextDate(tt.now, tt.date, tt.repeat)
 
 			if tt.expectErr {
 				require.Error(t, err, "An error was expected, but there was none")

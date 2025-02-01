@@ -7,9 +7,9 @@ import (
 	"os"
 
 	"github.com/10Narratives/task-tracker/internal/config"
-	"github.com/10Narratives/task-tracker/internal/http-server/mw_logger"
 	"github.com/10Narratives/task-tracker/internal/logging"
 	"github.com/10Narratives/task-tracker/internal/storage/sqlite"
+	"github.com/10Narratives/task-tracker/internal/transport/http/mw_logger"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/joho/godotenv"
