@@ -1,5 +1,7 @@
 package nextdate
 
+// TODO: Write docs
+
 import (
 	"errors"
 	"regexp"
@@ -13,6 +15,7 @@ var (
 )
 
 type DateIterator interface {
+	// TODO: Change on Next(base time.Time) time.Time
 	NextDate(startDate string) (string, error)
 }
 
@@ -24,6 +27,7 @@ func Validate(repeat string, rule string) error {
 	return nil
 }
 
+// TODO: Refactor names in this function
 func StringToTime(str string) (time.Time, error) {
 	parsedStr, err := time.Parse(DateLayout, str)
 	if err != nil {

@@ -1,5 +1,7 @@
 package nextdate
 
+// TODO: Make docs for this date iterator
+
 import (
 	"strconv"
 	"strings"
@@ -29,12 +31,14 @@ func NewDaily(repeatRule string) (Daily, error) {
 	return daily, err
 }
 
+// TODO: Change startDate type on time.Time and delete StringToTime conversation from method
 func (iter Daily) NextDate(startDate string) (string, error) {
 	parsedStartDate, err := nextdate.StringToTime(startDate)
 	if err != nil {
 		return "", err
 	}
 
+	// TODO: Find better solution
 	now := time.Now()
 	for now.After(parsedStartDate) {
 		parsedStartDate = parsedStartDate.AddDate(0, 0, iter.DayStep)
