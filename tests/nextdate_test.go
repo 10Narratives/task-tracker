@@ -10,12 +10,13 @@ import (
 )
 
 /*
-	{"20240113", "d 7", `20240127`},
-	{"20240120", "d 20", `20240209`},
-	{"20240202", "d 30", `20240303`},
-	{"20240320", "d 401", ""},
-	{"20231225", "d 12", `20240130`},
-	{"20240228", "d 1", "20240229"},*/
+	{"16890220", "y", `20240220`},
+	{"20250701", "y", `20260701`},
+	{"20240101", "y", `20250101`},
+	{"20231231", "y", `20241231`},
+	{"20240229", "y", `20250301`},
+	{"20240301", "y", `20250301`},
+*/
 
 func TestNextDate(t *testing.T) {
 	tests := []struct {
@@ -26,6 +27,27 @@ func TestNextDate(t *testing.T) {
 		want      string
 		expectErr error
 	}{
+		{
+			name:     "Valid yearly step, many years later",
+			now:      time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC),
+			date:     "16890220",
+			timeStep: "y",
+			want:     "20240220",
+		},
+		{
+			name:     "Valid yearly step, one year later",
+			now:      time.Date(2025, 8, 1, 0, 0, 0, 0, time.UTC),
+			date:     "20250701",
+			timeStep: "y",
+			want:     "20260701",
+		},
+		{
+			name:     "Valid yearly step, February - March",
+			now:      time.Date(2024, 8, 1, 0, 0, 0, 0, time.UTC),
+			date:     "20240229",
+			timeStep: "y",
+			want:     "20250301",
+		},
 		{
 			name:     "Valid daily step 7 days",
 			now:      time.Date(2025, 2, 1, 0, 0, 0, 0, time.UTC),
@@ -108,6 +130,44 @@ func TestDailyNext(t *testing.T) {
 			require.NoError(t, err)
 
 			result := daily.Next(tt.now, tt.start)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func TestYearlyNext(t *testing.T) {
+	tests := []struct {
+		name     string
+		start    time.Time
+		now      time.Time
+		expected time.Time
+	}{
+		{
+			name:     "Same year, no increment",
+			start:    time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC),
+			now:      time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+			expected: time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC),
+		},
+		{
+			name:     "One year later",
+			start:    time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC),
+			now:      time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+			expected: time.Date(2025, 2, 1, 0, 0, 0, 0, time.UTC),
+		},
+		{
+			name:     "Multiple years later",
+			start:    time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC),
+			now:      time.Date(2030, 5, 10, 0, 0, 0, 0, time.UTC),
+			expected: time.Date(2031, 2, 1, 0, 0, 0, 0, time.UTC),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			yearly, err := nextdate.NewYearly("y")
+			require.NoError(t, err)
+
+			result := yearly.Next(tt.now, tt.start)
 			assert.Equal(t, tt.expected, result)
 		})
 	}
