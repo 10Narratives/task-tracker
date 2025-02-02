@@ -1,37 +1,32 @@
 package nextdate
 
-// TODO: Write docs
-
 import (
 	"errors"
 	"regexp"
 	"time"
 )
 
+const DateLayout string = "20060102"
+
 var (
-	DateLayout                 string = "20060102"
-	ErrRepeatRuleIsNotValid    error  = errors.New("repeat rule is not valid")
-	ErrStartDateCanNotBeParsed error  = errors.New("can not parse start date")
+	ErrCanNotParseStartDate  error = errors.New("can not parse start date")
+	ErrInvalidTimeStepFormat error = errors.New("invalid time step format")
 )
 
+// DateIterator is an interface that defines methods for iterating through dates.
+// Implementing types should provide a mechanism to get the next date based on the
+// current date and a starting date, as well as validate a given time step.
 type DateIterator interface {
-	// TODO: Change on Next(base time.Time) time.Time
-	NextDate(startDate string) (string, error)
+	// Next returns the next date based on the provided current date (now)
+	// and a starting date (startDate). The method should define the logic
+	// for calculating the next date.
+	Next(now, startDate time.Time) time.Time
 }
 
-func Validate(repeat string, rule string) error {
-	re := regexp.MustCompile(rule)
-	if !re.MatchString(repeat) {
-		return ErrRepeatRuleIsNotValid
+func Validate(timeStep string, pattern string) error {
+	re := regexp.MustCompile(pattern)
+	if !re.MatchString(timeStep) {
+		return ErrInvalidTimeStepFormat
 	}
 	return nil
-}
-
-// TODO: Refactor names in this function
-func StringToTime(str string) (time.Time, error) {
-	parsedStr, err := time.Parse(DateLayout, str)
-	if err != nil {
-		return time.Time{}, errors.Join(ErrStartDateCanNotBeParsed, err)
-	}
-	return parsedStr, nil
 }
