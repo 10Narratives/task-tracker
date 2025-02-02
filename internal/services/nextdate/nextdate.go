@@ -1,7 +1,5 @@
 package nextdate
 
-// TODO: Write docs
-
 import (
 	"errors"
 	"regexp"
@@ -9,29 +7,17 @@ import (
 )
 
 var (
-	DateLayout                 string = "20060102"
-	ErrRepeatRuleIsNotValid    error  = errors.New("repeat rule is not valid")
-	ErrStartDateCanNotBeParsed error  = errors.New("can not parse start date")
+	ErrTimeStepIsNotValid error = errors.New("time step is not valid")
 )
 
 type DateIterator interface {
-	// TODO: Change on Next(base time.Time) time.Time
-	NextDate(startDate string) (string, error)
+	Next(startDate time.Time) time.Time
 }
 
-func Validate(repeat string, rule string) error {
-	re := regexp.MustCompile(rule)
-	if !re.MatchString(repeat) {
-		return ErrRepeatRuleIsNotValid
+func Validate(timeStep string, repeatRule string) error {
+	re := regexp.MustCompile(repeatRule)
+	if !re.MatchString(timeStep) {
+		return ErrTimeStepIsNotValid
 	}
 	return nil
-}
-
-// TODO: Refactor names in this function
-func StringToTime(str string) (time.Time, error) {
-	parsedStr, err := time.Parse(DateLayout, str)
-	if err != nil {
-		return time.Time{}, errors.Join(ErrStartDateCanNotBeParsed, err)
-	}
-	return parsedStr, nil
 }
