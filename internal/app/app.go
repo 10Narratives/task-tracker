@@ -4,7 +4,6 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
-	"os"
 
 	"github.com/10Narratives/task-tracker/internal/config"
 	"github.com/10Narratives/task-tracker/internal/storage/sqlite"
@@ -16,9 +15,11 @@ import (
 type App struct {
 	cfg     *config.Config
 	logger  *slog.Logger
-	storage *sqlite.Storage
+	storage *sqlite.TaskStorage
 	router  *chi.Mux
 }
+
+// TODO: Make database connection
 
 func New() App {
 	if err := godotenv.Load(); err != nil {
@@ -28,16 +29,10 @@ func New() App {
 	cfg := config.MustConfig()
 	logger := logging.MustLogger(cfg.Env)
 
-	storage, err := sqlite.New(cfg.Storage.DriverName, cfg.Storage.DataSourceName)
-	if err != nil {
-		logger.Warn("Can not initialize storage")
-		os.Exit(1)
-	}
-
 	router := chi.NewRouter()
 	router.Handle("/*", http.StripPrefix("/", http.FileServer(http.Dir(cfg.HTTP.FileServerPath))))
 
-	return App{cfg, logger, storage, router}
+	return App{cfg, logger, nil, router}
 }
 
 func (app *App) Run() {

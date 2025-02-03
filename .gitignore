@@ -31,4 +31,4 @@ go.work.sum
 config
 
 # Databases
-storage
+*.db
