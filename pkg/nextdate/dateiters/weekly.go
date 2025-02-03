@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/10Narratives/task-tracker/internal/services/nextdate"
+	"github.com/10Narratives/task-tracker/pkg/nextdate"
 )
 
 // WeeklyTimeStepPattern defines the regular expression used to validate

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/10Narratives/task-tracker/internal/services/nextdate"
+	"github.com/10Narratives/task-tracker/pkg/nextdate"
 )
 
 var YearlyTimeStepPattern = `y`
