@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/10Narratives/task-tracker/internal/services/nextdate"
+	"github.com/10Narratives/task-tracker/pkg/nextdate"
 )
 
 // DailyTimeStepPattern is a regular expression pattern that matches valid daily time step formats.

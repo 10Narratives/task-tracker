@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/10Narratives/task-tracker/internal/config"
-	"github.com/10Narratives/task-tracker/internal/logging"
 	"github.com/10Narratives/task-tracker/internal/storage/sqlite"
+	"github.com/10Narratives/task-tracker/pkg/logging"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
