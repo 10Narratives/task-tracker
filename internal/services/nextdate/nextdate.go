@@ -10,7 +10,7 @@ import (
 	"github.com/10Narratives/task-tracker/internal/services/nextdate/dateiters/yearly"
 )
 
-const DateLayout = "20060201"
+const DateLayout = "20060102"
 
 var (
 	ErrEmptyRepeat       = errors.New("empty repeat")
@@ -44,6 +44,24 @@ func newDateIterator(repeat string) (DateIterator, error) {
 	return dateIter, err
 }
 
+// NextDate calculates the next occurrence of a date based on a given repetition pattern.
+//
+// Parameters:
+//   - now: The current time, used as a reference.
+//   - date: The starting date from which the iteration begins.
+//   - repeat: A string defining the repetition pattern. Supported formats:
+//   - "d <number>" → Advances by a fixed number of days (1-400).
+//   - "w <number>" → Advances to specific weekdays (1 = Monday, 7 = Sunday).
+//   - "m <days> [months]" → Advances to specific days of the month (1-31, -1 for last day).
+//   - "y" → Advances by one year.
+//
+// Returns:
+//   - A string representing the next calculated date in the format defined by DateLayout.
+//   - An error if the repeat pattern is empty or unsupported.
+//
+// Errors:
+//   - ErrEmptyRepeat: If the repeat string is empty.
+//   - ErrUnsupportedOption: If the repeat pattern is invalid.
 func NextDate(now, date time.Time, repeat string) (string, error) {
 	if len(repeat) == 0 {
 		return "", ErrEmptyRepeat
