@@ -7,7 +7,7 @@ import (
 	"github.com/10Narratives/task-tracker/internal/services/nextdate"
 )
 
-const TimeStepPattern = `y`
+const timeStepPattern = `y`
 
 // Yearly represents an iterator that advances by one year at a time.
 type Yearly struct{}
@@ -17,7 +17,7 @@ type Yearly struct{}
 // Returns an error if the format is invalid.
 func New(timeStep string) (Yearly, error) {
 	yearly := Yearly{}
-	err := nextdate.Validate(timeStep, TimeStepPattern)
+	err := nextdate.Validate(timeStep, timeStepPattern)
 	if err != nil {
 		err = fmt.Errorf("%w: yearly format is y", err)
 	}

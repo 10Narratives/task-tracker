@@ -7,7 +7,7 @@ import (
 	"github.com/10Narratives/task-tracker/internal/services/nextdate"
 )
 
-const TimeStepPattern = `^d (?:[1-9]|[1-9][0-9]|[1-3][0-9]{2}|400)$`
+const timeStepPattern = `^d (?:[1-9]|[1-9][0-9]|[1-3][0-9]{2}|400)$`
 
 // Daily represents an iterator that advances by a fixed number of days.
 type Daily struct {
@@ -18,7 +18,7 @@ type Daily struct {
 func New(timeStep string) (Daily, error) {
 	daily := Daily{}
 
-	err := nextdate.Validate(timeStep, TimeStepPattern)
+	err := nextdate.Validate(timeStep, timeStepPattern)
 	if err != nil {
 		return daily, fmt.Errorf("%w: daily format is d <number> where number in range [1, 400]", err)
 	}

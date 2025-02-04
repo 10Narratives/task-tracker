@@ -92,14 +92,6 @@ func TestWeekly(t *testing.T) {
 	}
 }
 
-// {"Large step", "d 28", time.Date(2025, 2, 2, 0, 0, 0, 0, time.UTC), time.Date(2025, 2, 1, 0, 0, 0, 0, time.UTC), time.Date(2025, 3, 1, 0, 0, 0, 0, time.UTC)},
-
-/*
-	{"20240125", "w 1,2,3", "20240129"},
-	{"20240126", "w 7", "20240128"},
-	{"20230126", "w 4,5", "20240201"},
-*/
-
 func TestWeekly_Next(t *testing.T) {
 	t.Parallel()
 
