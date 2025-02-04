@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/10Narratives/task-tracker/internal/services/nextdate"
+	"github.com/10Narratives/task-tracker/internal/services/nextdate/validation"
 )
 
 const timeStepPattern = `^d (?:[1-9]|[1-9][0-9]|[1-3][0-9]{2}|400)$`
@@ -18,7 +18,7 @@ type Daily struct {
 func New(timeStep string) (Daily, error) {
 	daily := Daily{}
 
-	err := nextdate.Validate(timeStep, timeStepPattern)
+	err := validation.Validate(timeStep, timeStepPattern)
 	if err != nil {
 		return daily, fmt.Errorf("%w: daily format is d <number> where number in range [1, 400]", err)
 	}

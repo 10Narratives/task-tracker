@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/10Narratives/task-tracker/internal/services/nextdate"
+	"github.com/10Narratives/task-tracker/internal/services/nextdate/validation"
 )
 
 const timeStepPattern = `^m (-?[1-9]|-1|-2|[12][0-9]|3[01])(,(-?[1-9]|-1|-2|[12][0-9]|3[01]))*( (1[0-2]|[1-9])(,(1[0-2]|[1-9]))*)?$`
@@ -18,7 +18,7 @@ type Monthly struct {
 
 func New(timeStep string) (Monthly, error) {
 	monthly := Monthly{}
-	err := nextdate.Validate(timeStep, timeStepPattern)
+	err := validation.Validate(timeStep, timeStepPattern)
 	if err != nil {
 		return monthly, fmt.Errorf("%w: monthly format is m <1-31,-1,-2> [1-12]", err)
 	}

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/10Narratives/task-tracker/internal/services/nextdate"
+	"github.com/10Narratives/task-tracker/internal/services/nextdate/validation"
 )
 
 const timeStepPattern = `^w ([1-7](,[1-7])*)$`
@@ -21,7 +21,7 @@ type Weekly struct {
 // Multiple days can be specified as comma-separated values (e.g., "w 1,3,5").
 func New(timeStep string) (Weekly, error) {
 	weekly := Weekly{}
-	err := nextdate.Validate(timeStep, timeStepPattern)
+	err := validation.Validate(timeStep, timeStepPattern)
 	if err != nil {
 		return weekly, fmt.Errorf("%w: weekly format is `w [1-7]`", err)
 	}

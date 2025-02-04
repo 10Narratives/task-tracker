@@ -2,26 +2,57 @@ package nextdate
 
 import (
 	"errors"
-	"regexp"
 	"time"
+
+	"github.com/10Narratives/task-tracker/internal/services/nextdate/dateiters/daily"
+	"github.com/10Narratives/task-tracker/internal/services/nextdate/dateiters/monthly"
+	"github.com/10Narratives/task-tracker/internal/services/nextdate/dateiters/weekly"
+	"github.com/10Narratives/task-tracker/internal/services/nextdate/dateiters/yearly"
+)
+
+const DateLayout = "20060201"
+
+var (
+	ErrEmptyRepeat       = errors.New("empty repeat")
+	ErrUnsupportedOption = errors.New("unsupported option")
 )
 
 type DateIterator interface {
 	Next(now, startDate time.Time) time.Time
 }
 
-var ErrInvalidTimeStepFormat = errors.New("invalid time step format")
-
-func Validate(timeStep, pattern string) error {
-	re := regexp.MustCompile(pattern)
-	if !re.MatchString(timeStep) {
-		return ErrInvalidTimeStepFormat
+func newDateIterator(repeat string) (DateIterator, error) {
+	var dateIter DateIterator
+	var err error = nil
+	switch repeat[0] {
+	case 'd':
+		dateIter, err = daily.New(repeat)
+		break
+	case 'w':
+		dateIter, err = weekly.New(repeat)
+		break
+	case 'm':
+		dateIter, err = monthly.New(repeat)
+		break
+	case 'y':
+		dateIter, err = yearly.New(repeat)
+		break
+	default:
+		err = ErrUnsupportedOption
 	}
-	return nil
+
+	return dateIter, err
 }
 
 func NextDate(now, date time.Time, repeat string) (string, error) {
-	// Validate repeat
+	if len(repeat) == 0 {
+		return "", ErrEmptyRepeat
+	}
 
-	return "", nil
+	dateIter, err := newDateIterator(repeat)
+	if err != nil {
+		return "", err
+	}
+
+	return dateIter.Next(now, date).Format(DateLayout), nil
 }
