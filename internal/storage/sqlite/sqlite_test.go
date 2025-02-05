@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/10Narratives/task-tracker/internal/models"
-	"github.com/10Narratives/task-tracker/internal/storage"
 	"github.com/10Narratives/task-tracker/internal/storage/sqlite"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -81,96 +80,57 @@ func TestTaskStorage_Prepare(t *testing.T) {
 func TestTaskStorage_Create(t *testing.T) {
 	t.Parallel()
 
-	type args struct {
-		ctx  context.Context
-		task *models.Task
-	}
-
 	var (
-		id      int64  = 100
-		date    string = "20240203"
-		title   string = "test title"
-		comment string = "test comment"
-		repeat  string = "test repeat"
+		id      int64  = 10
+		date    string = "20250205"
+		title   string = "Test title"
+		comment string = "Test comment"
+		repeat  string = "Test repeat"
 	)
 
+	type args struct {
+		ctx     context.Context
+		date    string
+		title   string
+		comment string
+		repeat  string
+	}
+
 	tests := []struct {
-		name     string
-		mocks    func(dbMock sqlmock.Sqlmock)
-		args     args
-		wantTask require.ValueAssertionFunc
-		wantErr  require.ErrorAssertionFunc
+		name    string
+		mocks   func(dbMock sqlmock.Sqlmock)
+		args    args
+		wantID  require.ValueAssertionFunc
+		wantErr require.ErrorAssertionFunc
 	}{
 		{
-			name: "success",
+			name: "successful creation",
 			mocks: func(dbMock sqlmock.Sqlmock) {
-				dbMock.
-					ExpectExec(`INSERT INTO scheduler`).
-					WithArgs(date, title, comment, repeat).
-					WillReturnResult(sqlmock.NewResult(id, 1))
+				query := regexp.QuoteMeta("INSERT INTO scheduler (date, title, comment, repeat) VALUES (?, ?, ?, ?)")
+				dbMock.ExpectExec(query).WithArgs(date, title, comment, repeat).WillReturnResult(sqlmock.NewResult(id, 1))
 			},
-			args: args{
-				ctx: context.Background(),
-				task: &models.Task{
-					Date:    date,
-					Title:   title,
-					Comment: comment,
-					Repeat:  repeat,
-				},
-			},
-			wantTask: func(tt require.TestingT, got interface{}, i ...interface{}) {
-				task, ok := got.(*models.Task)
+			args: args{context.Background(), date, title, comment, repeat},
+			wantID: func(tt require.TestingT, got interface{}, _ ...interface{}) {
+				gottenID, ok := got.(int64)
 				require.True(t, ok)
-				require.NotNil(t, task, i...)
-				assert.Equal(t, id, task.ID, i...)
-				assert.Equal(t, date, task.Date, i...)
-				assert.Equal(t, title, task.Title, i...)
-				assert.Equal(t, comment, task.Comment, i...)
-				assert.Equal(t, repeat, task.Repeat, i...)
+				assert.Equal(t, id, gottenID)
 			},
 			wantErr: require.NoError,
 		},
 		{
 			name: "database error",
 			mocks: func(dbMock sqlmock.Sqlmock) {
-				dbMock.
-					ExpectExec(`INSERT INTO scheduler`).
-					WithArgs(date, title, comment, repeat).
-					WillReturnError(errors.New("database error"))
+				query := regexp.QuoteMeta("INSERT INTO scheduler (date, title, comment, repeat) VALUES (?, ?, ?, ?)")
+				dbMock.ExpectExec(query).WithArgs(date, title, comment, repeat).WillReturnError(errors.New("database error"))
 			},
-			args: args{
-				ctx: context.Background(),
-				task: &models.Task{
-					Date:    date,
-					Title:   title,
-					Comment: comment,
-					Repeat:  repeat,
-				},
-			},
-			wantTask: func(tt require.TestingT, got interface{}, i ...interface{}) {
-				task, ok := got.(*models.Task)
+			args: args{context.Background(), date, title, comment, repeat},
+			wantID: func(tt require.TestingT, got interface{}, _ ...interface{}) {
+				gottenID, ok := got.(int64)
 				require.True(t, ok)
-				require.NotNil(t, task, i...)
-				assert.Equal(t, int64(0), task.ID, i...)
-				assert.Equal(t, date, task.Date, i...)
-				assert.Equal(t, title, task.Title, i...)
-				assert.Equal(t, comment, task.Comment, i...)
-				assert.Equal(t, repeat, task.Repeat, i...)
+				assert.Equal(t, int64(0), gottenID)
 			},
 			wantErr: func(tt require.TestingT, err error, i ...interface{}) {
-				assert.EqualError(t, err, "cannot insert task into database: database error", i...)
-			},
-		},
-		{
-			name:  "nil task",
-			mocks: func(dbMock sqlmock.Sqlmock) {},
-			args: args{
-				ctx:  context.Background(),
-				task: nil,
-			},
-			wantTask: require.Nil,
-			wantErr: func(tt require.TestingT, err error, i ...interface{}) {
-				require.EqualError(t, err, storage.ErrNilTaskCreation.Error(), i...)
+				assert.EqualError(t, err, "cannot insert task in database: database error")
 			},
 		},
 	}
@@ -182,12 +142,12 @@ func TestTaskStorage_Create(t *testing.T) {
 			db, dbMock, err := sqlmock.New()
 			require.NoError(t, err)
 
-			storage := sqlite.New(db, 10)
+			storage := sqlite.New(db, 3)
 			tt.mocks(dbMock)
 
-			err = storage.Create(tt.args.ctx, tt.args.task)
+			id, err := storage.Create(tt.args.ctx, tt.args.date, tt.args.title, tt.args.comment, tt.args.repeat)
+			tt.wantID(t, id)
 			tt.wantErr(t, err)
-			tt.wantTask(t, tt.args.task)
 
 			require.NoError(t, dbMock.ExpectationsWereMet())
 		})
@@ -509,22 +469,6 @@ func TestTaskStorage_ReadByDate(t *testing.T) {
 				require.EqualError(tt, err, "cannot execute query: database error")
 			},
 		},
-		{
-			name:  "empty date",
-			mocks: func(dbMock sqlmock.Sqlmock) {},
-			args: args{
-				ctx:  context.Background(),
-				date: "",
-			},
-			wantTasks: func(tt require.TestingT, got interface{}, i ...interface{}) {
-				tasks, ok := got.([]models.Task)
-				require.True(t, ok)
-				require.Empty(t, tasks)
-			},
-			wantErr: func(tt require.TestingT, err error, i ...interface{}) {
-				require.EqualError(tt, err, storage.ErrEmptyDate.Error())
-			},
-		},
 	}
 
 	for _, tt := range tests {
@@ -645,22 +589,6 @@ func TestTaskStorage_ReadByPayload(t *testing.T) {
 				require.EqualError(tt, err, "cannot execute query: database error")
 			},
 		},
-		{
-			name:  "empty payload",
-			mocks: func(dbMock sqlmock.Sqlmock) {},
-			args: args{
-				ctx:     context.Background(),
-				payload: "",
-			},
-			wantTasks: func(tt require.TestingT, got interface{}, i ...interface{}) {
-				tasks, ok := got.([]models.Task)
-				require.True(t, ok)
-				require.Empty(t, tasks)
-			},
-			wantErr: func(tt require.TestingT, err error, i ...interface{}) {
-				require.EqualError(tt, err, storage.ErrEmptyPayload.Error())
-			},
-		},
 	}
 
 	for _, tt := range tests {
@@ -775,7 +703,7 @@ func TestTaskStorage_Update(t *testing.T) {
 				task: nil,
 			},
 			wantErr: func(tt require.TestingT, err error, i ...interface{}) {
-				require.EqualError(tt, err, storage.ErrNilTaskUpdate.Error(), i...)
+				require.EqualError(tt, err, "cannot update task using nil pointer", i...)
 			},
 		},
 	}

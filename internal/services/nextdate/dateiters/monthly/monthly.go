@@ -1,12 +1,9 @@
 package monthly
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/10Narratives/task-tracker/internal/services/nextdate/validation"
 )
 
 const timeStepPattern = `^m (-?[1-9]|-1|-2|[12][0-9]|3[01])(,(-?[1-9]|-1|-2|[12][0-9]|3[01]))*( (1[0-2]|[1-9])(,(1[0-2]|[1-9]))*)?$`
@@ -16,12 +13,8 @@ type Monthly struct {
 	Months map[int]bool
 }
 
-func New(timeStep string) (Monthly, error) {
+func New(timeStep string) Monthly {
 	monthly := Monthly{}
-	err := validation.Validate(timeStep, timeStepPattern)
-	if err != nil {
-		return monthly, fmt.Errorf("%w: monthly format is m <1-31,-1,-2> [1-12]", err)
-	}
 
 	slicedStep := strings.Split(timeStep, " ")
 	days := strings.Split(slicedStep[1], ",")
@@ -31,7 +24,7 @@ func New(timeStep string) (Monthly, error) {
 	}
 
 	if len(slicedStep) < 3 {
-		return monthly, nil
+		return monthly
 	}
 
 	months := strings.Split(slicedStep[2], ",")
@@ -43,7 +36,7 @@ func New(timeStep string) (Monthly, error) {
 		}
 	}
 
-	return monthly, nil
+	return monthly
 }
 
 func (iter Monthly) Next(now, startDate time.Time) time.Time {
