@@ -3,11 +3,7 @@ package daily
 import (
 	"fmt"
 	"time"
-
-	"github.com/10Narratives/task-tracker/internal/services/nextdate/validation"
 )
-
-const timeStepPattern = `^d (?:[1-9]|[1-9][0-9]|[1-3][0-9]{2}|400)$`
 
 // Daily represents an iterator that advances by a fixed number of days.
 type Daily struct {
@@ -15,16 +11,10 @@ type Daily struct {
 }
 
 // New creates a new Daily iterator from a given time step string.
-func New(timeStep string) (Daily, error) {
+func New(timeStep string) Daily {
 	daily := Daily{}
-
-	err := validation.Validate(timeStep, timeStepPattern)
-	if err != nil {
-		return daily, fmt.Errorf("%w: daily format is d <number> where number in range [1, 400]", err)
-	}
 	fmt.Sscanf(timeStep, "d %d", &daily.DayStep)
-
-	return daily, nil
+	return daily
 }
 
 // Next calculates the next occurrence based on the current time and the start date.

@@ -88,7 +88,7 @@ func (service TaskService) Complete(ctx context.Context, id int64) error {
 	}
 
 	parsed, _ := time.Parse(nextdate.DateLayout, task.Date)
-	task.Date, _ = nextdate.NextDate(time.Now(), parsed, task.Repeat)
+	task.Date = nextdate.NextDate(time.Now(), parsed, task.Repeat)
 
 	return nil
 }

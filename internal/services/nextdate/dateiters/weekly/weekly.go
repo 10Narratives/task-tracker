@@ -1,12 +1,9 @@
 package weekly
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/10Narratives/task-tracker/internal/services/nextdate/validation"
 )
 
 const timeStepPattern = `^w ([1-7](,[1-7])*)$`
@@ -17,14 +14,8 @@ type Weekly struct {
 }
 
 // New creates a new Weekly iterator from a given time step string.
-// The time step must follow the format "w [1-7]" where 1 = Monday and 7 = Sunday.
-// Multiple days can be specified as comma-separated values (e.g., "w 1,3,5").
-func New(timeStep string) (Weekly, error) {
+func New(timeStep string) Weekly {
 	weekly := Weekly{}
-	err := validation.Validate(timeStep, timeStepPattern)
-	if err != nil {
-		return weekly, fmt.Errorf("%w: weekly format is `w [1-7]`", err)
-	}
 
 	weekdays := strings.Split(timeStep[2:], ",")
 	weekly.Weekdays = make([]int, len(weekdays))
@@ -32,7 +23,7 @@ func New(timeStep string) (Weekly, error) {
 		weekly.Weekdays[i], _ = strconv.Atoi(weekday)
 	}
 
-	return weekly, nil
+	return weekly
 }
 
 // Next calculates the next occurrence based on the current time and the start date.

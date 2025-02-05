@@ -20,7 +20,6 @@ func TestNew(t *testing.T) {
 		name     string
 		args     args
 		wantIter require.ValueAssertionFunc
-		wantErr  require.ErrorAssertionFunc
 	}{
 		{
 			name: "successful initialization",
@@ -33,34 +32,29 @@ func TestNew(t *testing.T) {
 
 				assert.Equal(t, 7, iter.DayStep)
 			},
-			wantErr: require.NoError,
 		},
 		{
-			name: "invalid timeStep",
+			name: "successful initialization",
 			args: args{
-				timeStep: "invalid",
+				timeStep: `d 50`,
 			},
 			wantIter: func(tt require.TestingT, got interface{}, _ ...interface{}) {
 				iter, ok := got.(daily.Daily)
 				require.True(t, ok)
-				assert.Equal(t, daily.Daily{}, iter)
-			},
-			wantErr: func(tt require.TestingT, err error, _ ...interface{}) {
-				assert.EqualError(t, err, "invalid time step format: daily format is d <number> where number in range [1, 400]")
+
+				assert.Equal(t, 50, iter.DayStep)
 			},
 		},
 		{
-			name: "timeStep out of range",
+			name: "successful initialization",
 			args: args{
-				timeStep: "d 401",
+				timeStep: `d 11`,
 			},
 			wantIter: func(tt require.TestingT, got interface{}, _ ...interface{}) {
 				iter, ok := got.(daily.Daily)
 				require.True(t, ok)
-				assert.Equal(t, daily.Daily{}, iter)
-			},
-			wantErr: func(tt require.TestingT, err error, _ ...interface{}) {
-				assert.EqualError(t, err, "invalid time step format: daily format is d <number> where number in range [1, 400]")
+
+				assert.Equal(t, 11, iter.DayStep)
 			},
 		},
 	}
@@ -69,9 +63,8 @@ func TestNew(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			daily, err := daily.New(tt.args.timeStep)
+			daily := daily.New(tt.args.timeStep)
 			tt.wantIter(t, daily)
-			tt.wantErr(t, err)
 		})
 	}
 }
@@ -96,8 +89,7 @@ func TestDaily_Next(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			daily, err := daily.New(tt.timeStep)
-			require.NoError(t, err)
+			daily := daily.New(tt.timeStep)
 
 			newDate := daily.Next(tt.now, tt.startDate)
 			assert.Equal(t, tt.wantDate, newDate)

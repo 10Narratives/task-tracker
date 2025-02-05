@@ -20,7 +20,6 @@ func TestWeekly(t *testing.T) {
 		name     string
 		args     args
 		wantIter require.ValueAssertionFunc
-		wantErr  require.ErrorAssertionFunc
 	}{
 		{
 			name: "successful initialization",
@@ -35,7 +34,6 @@ func TestWeekly(t *testing.T) {
 				assert.Equal(t, iter.Weekdays[0], 1)
 				assert.Equal(t, iter.Weekdays[1], 4)
 			},
-			wantErr: require.NoError,
 		},
 		{
 			name: "successful initialization with single weekday",
@@ -49,35 +47,6 @@ func TestWeekly(t *testing.T) {
 				assert.Len(t, iter.Weekdays, 1)
 				assert.Equal(t, iter.Weekdays[0], 1)
 			},
-			wantErr: require.NoError,
-		},
-		{
-			name: "empty timeStep",
-			args: args{
-				timeStep: "",
-			},
-			wantIter: func(tt require.TestingT, got interface{}, _ ...interface{}) {
-				iter, ok := got.(weekly.Weekly)
-				require.True(t, ok)
-				assert.Equal(t, weekly.Weekly{}, iter)
-			},
-			wantErr: func(tt require.TestingT, err error, i ...interface{}) {
-				assert.EqualError(t, err, "invalid time step format: weekly format is `w [1-7]`")
-			},
-		},
-		{
-			name: "timeStep out of range",
-			args: args{
-				timeStep: "w 1,11",
-			},
-			wantIter: func(tt require.TestingT, got interface{}, _ ...interface{}) {
-				iter, ok := got.(weekly.Weekly)
-				require.True(t, ok)
-				assert.Equal(t, weekly.Weekly{}, iter)
-			},
-			wantErr: func(tt require.TestingT, err error, i ...interface{}) {
-				assert.EqualError(t, err, "invalid time step format: weekly format is `w [1-7]`")
-			},
 		},
 	}
 
@@ -85,9 +54,8 @@ func TestWeekly(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			weekly, err := weekly.New(tt.args.timeStep)
+			weekly := weekly.New(tt.args.timeStep)
 			tt.wantIter(t, weekly)
-			tt.wantErr(t, err)
 		})
 	}
 }
@@ -111,8 +79,7 @@ func TestWeekly_Next(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			weekly, err := weekly.New(tt.timeStep)
-			require.NoError(t, err)
+			weekly := weekly.New(tt.timeStep)
 
 			newDate := weekly.Next(tt.now, tt.startDate)
 			assert.Equal(t, tt.wantDate, newDate)

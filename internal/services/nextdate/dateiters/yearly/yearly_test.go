@@ -20,7 +20,6 @@ func TestNew(t *testing.T) {
 		name     string
 		args     args
 		wantIter require.ValueAssertionFunc
-		wantErr  require.ErrorAssertionFunc
 	}{
 		{
 			name: "Successful initialization",
@@ -32,21 +31,6 @@ func TestNew(t *testing.T) {
 				require.True(t, ok)
 				assert.Equal(t, yearly.Yearly{}, iter)
 			},
-			wantErr: require.NoError,
-		},
-		{
-			name: "invalid timeStep",
-			args: args{
-				timeStep: "invalid",
-			},
-			wantIter: func(tt require.TestingT, got interface{}, _ ...interface{}) {
-				iter, ok := got.(yearly.Yearly)
-				require.True(t, ok)
-				assert.Equal(t, yearly.Yearly{}, iter)
-			},
-			wantErr: func(tt require.TestingT, err error, _ ...interface{}) {
-				assert.EqualError(t, err, "invalid time step format: yearly format is y")
-			},
 		},
 	}
 
@@ -54,9 +38,8 @@ func TestNew(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			yearly, err := yearly.New(tt.args.timeStep)
+			yearly := yearly.New(tt.args.timeStep)
 			tt.wantIter(t, yearly)
-			tt.wantErr(t, err)
 		})
 	}
 }
@@ -81,8 +64,7 @@ func TestYearly_Next(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			yearly, err := yearly.New(tt.timeStep)
-			require.NoError(t, err)
+			yearly := yearly.New(tt.timeStep)
 
 			newDate := yearly.Next(tt.now, tt.startDate)
 			assert.Equal(t, tt.wantDate, newDate)

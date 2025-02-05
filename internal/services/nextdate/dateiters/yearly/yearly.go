@@ -1,10 +1,7 @@
 package yearly
 
 import (
-	"fmt"
 	"time"
-
-	"github.com/10Narratives/task-tracker/internal/services/nextdate/validation"
 )
 
 const timeStepPattern = `^y$`
@@ -13,15 +10,8 @@ const timeStepPattern = `^y$`
 type Yearly struct{}
 
 // New creates a new Yearly iterator from a given time step string.
-// The time step must be exactly "y".
-// Returns an error if the format is invalid.
-func New(timeStep string) (Yearly, error) {
-	yearly := Yearly{}
-	err := validation.Validate(timeStep, timeStepPattern)
-	if err != nil {
-		err = fmt.Errorf("%w: yearly format is y", err)
-	}
-	return yearly, err
+func New(timeStep string) Yearly {
+	return Yearly{}
 }
 
 // Next calculates the next occurrence based on the current time and the start date.
