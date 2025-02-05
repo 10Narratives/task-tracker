@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/10Narratives/task-tracker/internal/models"
-	"github.com/10Narratives/task-tracker/internal/storage"
 	"github.com/10Narratives/task-tracker/internal/storage/sqlite"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -170,7 +169,7 @@ func TestTaskStorage_Create(t *testing.T) {
 			},
 			wantTask: require.Nil,
 			wantErr: func(tt require.TestingT, err error, i ...interface{}) {
-				require.EqualError(t, err, storage.ErrNilTaskCreation.Error(), i...)
+				require.EqualError(t, err, "cannot create task using nil pointer", i...)
 			},
 		},
 	}
@@ -509,22 +508,6 @@ func TestTaskStorage_ReadByDate(t *testing.T) {
 				require.EqualError(tt, err, "cannot execute query: database error")
 			},
 		},
-		{
-			name:  "empty date",
-			mocks: func(dbMock sqlmock.Sqlmock) {},
-			args: args{
-				ctx:  context.Background(),
-				date: "",
-			},
-			wantTasks: func(tt require.TestingT, got interface{}, i ...interface{}) {
-				tasks, ok := got.([]models.Task)
-				require.True(t, ok)
-				require.Empty(t, tasks)
-			},
-			wantErr: func(tt require.TestingT, err error, i ...interface{}) {
-				require.EqualError(tt, err, storage.ErrEmptyDate.Error())
-			},
-		},
 	}
 
 	for _, tt := range tests {
@@ -645,22 +628,6 @@ func TestTaskStorage_ReadByPayload(t *testing.T) {
 				require.EqualError(tt, err, "cannot execute query: database error")
 			},
 		},
-		{
-			name:  "empty payload",
-			mocks: func(dbMock sqlmock.Sqlmock) {},
-			args: args{
-				ctx:     context.Background(),
-				payload: "",
-			},
-			wantTasks: func(tt require.TestingT, got interface{}, i ...interface{}) {
-				tasks, ok := got.([]models.Task)
-				require.True(t, ok)
-				require.Empty(t, tasks)
-			},
-			wantErr: func(tt require.TestingT, err error, i ...interface{}) {
-				require.EqualError(tt, err, storage.ErrEmptyPayload.Error())
-			},
-		},
 	}
 
 	for _, tt := range tests {
@@ -775,7 +742,7 @@ func TestTaskStorage_Update(t *testing.T) {
 				task: nil,
 			},
 			wantErr: func(tt require.TestingT, err error, i ...interface{}) {
-				require.EqualError(tt, err, storage.ErrNilTaskUpdate.Error(), i...)
+				require.EqualError(tt, err, "cannot update task using nil pointer", i...)
 			},
 		},
 	}

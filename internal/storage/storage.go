@@ -3,19 +3,9 @@ package storage
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 
 	"github.com/10Narratives/task-tracker/internal/models"
-)
-
-var (
-	// ErrTaskNotFound    = errors.New("task not found")
-	ErrNilTaskCreation = errors.New("cannot create task using nil pointer")
-	ErrNilTaskUpdate   = errors.New("cannot update task using nil pointer")
-	ErrEmptyDate       = errors.New("date cannot be empty for task retrieval")
-	ErrEmptyPayload    = errors.New("payload cannot be empty for task retrieval")
-	ErrLimitOutOfRange = errors.New("limit must be within the allowed range")
 )
 
 type TaskStorage interface {

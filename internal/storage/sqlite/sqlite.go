@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/10Narratives/task-tracker/internal/models"
-	"github.com/10Narratives/task-tracker/internal/storage"
 )
 
 type TaskStorage struct {
@@ -71,7 +70,7 @@ func (s TaskStorage) Prepare() error {
 // - Updates t.ID with the newly generated database ID upon successful insertion.
 func (s TaskStorage) Create(ctx context.Context, t *models.Task) error {
 	if t == nil {
-		return storage.ErrNilTaskCreation
+		return fmt.Errorf("cannot create task using nil pointer")
 	}
 
 	query := `INSERT INTO scheduler (date, title, comment, repeat) VALUES (?, ?, ?, ?)`
@@ -165,10 +164,6 @@ func (s TaskStorage) ReadGroup(ctx context.Context) ([]models.Task, error) {
 // - []models.Task: A slice of tasks that match the given date
 // - error: Returns ErrEmptyDate if the date is empty or a wrapped error if the query fails.
 func (s TaskStorage) ReadByDate(ctx context.Context, date string) ([]models.Task, error) {
-	if len(date) == 0 {
-		return make([]models.Task, 0), storage.ErrEmptyDate
-	}
-
 	query := `SELECT id, date, title, comment, repeat FROM scheduler WHERE date = ? LIMIT ?`
 	return s.queryTasks(ctx, query, date, s.Limit)
 }
@@ -183,10 +178,6 @@ func (s TaskStorage) ReadByDate(ctx context.Context, date string) ([]models.Task
 // - []models.Task: A slice of matching tasks, ordered by date.
 // - error: Returns ErrEmptyPayload if the payload is empty or a wrapped error if the query fails.
 func (s TaskStorage) ReadByPayload(ctx context.Context, payload string) ([]models.Task, error) {
-	if len(payload) == 0 {
-		return make([]models.Task, 0), storage.ErrEmptyPayload
-	}
-
 	query := `SELECT id, date, title, comment, repeat FROM scheduler WHERE title LIKE ? OR comment LIKE ? ORDER BY date LIMIT ?`
 	return s.queryTasks(ctx, query, payload, payload, s.Limit)
 }
@@ -201,7 +192,7 @@ func (s TaskStorage) ReadByPayload(ctx context.Context, payload string) ([]model
 // - error: Returns ErrNilTaskUpdate if t is nil or a wrapped error if the update fails.
 func (s TaskStorage) Update(ctx context.Context, t *models.Task) error {
 	if t == nil {
-		return storage.ErrNilTaskUpdate
+		return fmt.Errorf("cannot update task using nil pointer")
 	}
 
 	query := `
