@@ -20,15 +20,8 @@ func New(storage storage.TaskStorage) TaskService {
 }
 
 // Register creates task model
-func (service TaskService) Register(ctx context.Context, date, title, comment, repeat string) (models.Task, error) {
-	task := models.Task{Date: date, Title: title, Comment: comment, Repeat: repeat}
-
-	err := service.storage.Create(ctx, &task)
-	if err != nil {
-		return models.Task{}, err
-	}
-
-	return task, nil
+func (service TaskService) Register(ctx context.Context, date, title, comment, repeat string) (int64, error) {
+	return service.storage.Create(ctx, date, title, comment, repeat)
 }
 
 func (service TaskService) Task(ctx context.Context, id int64) (models.Task, error) {

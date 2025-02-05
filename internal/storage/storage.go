@@ -9,7 +9,7 @@ import (
 )
 
 type TaskStorage interface {
-	Create(ctx context.Context, t *models.Task) error
+	Create(ctx context.Context, date, title, comment, repeat string) (int64, error)
 	Read(ctx context.Context, id int64) (models.Task, error)
 	ReadGroup(ctx context.Context) ([]models.Task, error)
 	ReadByDate(ctx context.Context, date string) ([]models.Task, error)

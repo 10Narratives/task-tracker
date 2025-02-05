@@ -57,36 +57,19 @@ func (s TaskStorage) Prepare() error {
 	return nil
 }
 
-// Create inserts a new task into the scheduler database.
-//
-// Parameters:
-// - ctx: Context for request cancellation and timeout control.
-// - t: Pointer to the Task model to be inserted. Must not be nil.
-//
-// Returns:
-// - error: Returns ErrNilTaskCreation if t is nil, or a wrapped error if the database operation fails.
-//
-// Side Effects:
-// - Updates t.ID with the newly generated database ID upon successful insertion.
-func (s TaskStorage) Create(ctx context.Context, t *models.Task) error {
-	if t == nil {
-		return fmt.Errorf("cannot create task using nil pointer")
-	}
-
+func (s TaskStorage) Create(ctx context.Context, date, title, comment, repeat string) (int64, error) {
 	query := `INSERT INTO scheduler (date, title, comment, repeat) VALUES (?, ?, ?, ?)`
-	result, err := s.DB.ExecContext(ctx, query, t.Date, t.Title, t.Comment, t.Repeat)
+	result, err := s.DB.ExecContext(ctx, query, date, title, comment, repeat)
 	if err != nil {
-		return fmt.Errorf("cannot insert task into database: %w", err)
+		return 0, fmt.Errorf("cannot insert task in database: %w", err)
 	}
 
 	lastID, err := result.LastInsertId()
 	if err != nil {
-		return fmt.Errorf("cannot get last inserted id: %w", err)
+		return 0, fmt.Errorf("cannot take last insert id: %w", err)
 	}
 
-	t.ID = lastID
-
-	return nil
+	return lastID, nil
 }
 
 // Read retrieves a task from the scheduler database by its ID.
