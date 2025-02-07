@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/10Narratives/task-tracker/internal/models"
-	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 )
 
@@ -22,7 +21,7 @@ type TaskReader interface {
 
 func New(logger *slog.Logger, tr TaskReader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		search := chi.URLParam(r, "search")
+		search := r.URL.Query().Get("search")
 		tasks, err := tr.Tasks(context.Background(), search)
 		if err != nil {
 			logger.Error("failed to read tasks")
