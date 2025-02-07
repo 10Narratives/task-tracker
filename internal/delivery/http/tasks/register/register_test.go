@@ -87,34 +87,23 @@ func TestRegisterHandler(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			// Создаем мок TaskRegistrar
 			mockRegistrar := new(mocks.TaskRegistrar)
 			tc.mockSetup(mockRegistrar)
 
-			// Создаем обработчик с моками
 			handler := register.New(slogdiscard.NewDiscardLogger(), mockRegistrar)
 
-			// Создаем HTTP-запрос
 			req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewBufferString(tc.requestBody))
 			req.Header.Set("Content-Type", "application/json")
-
-			// Создаем ResponseRecorder для записи ответа
 			recorder := httptest.NewRecorder()
 
-			// Вызываем обработчик
 			handler.ServeHTTP(recorder, req)
 
-			// Проверяем статус-код
 			assert.Equal(t, tc.expectedStatus, recorder.Code)
 
-			// Декодируем ответ
 			var actualResp register.Response
 			_ = json.Unmarshal(recorder.Body.Bytes(), &actualResp)
 
-			// Проверяем тело ответа
 			assert.Equal(t, tc.expectedResp, actualResp)
-
-			// Проверяем вызовы моков
 			mockRegistrar.AssertExpectations(t)
 		})
 	}
