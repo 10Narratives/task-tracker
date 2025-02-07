@@ -45,7 +45,7 @@ func TestReadHandler(t *testing.T) {
 			name:   "Search by date",
 			search: "20250205",
 			mockSetup: func(m *mocks.TaskReader) {
-				m.On("Tasks", mock.Anything, "").Return([]models.Task{
+				m.On("Tasks", mock.Anything, "20250205").Return([]models.Task{
 					{ID: 1, Title: "Task 1", Date: "20250205", Comment: "The 1 task"},
 					{ID: 2, Title: "Task 2", Date: "20250205", Comment: "The 2 task"},
 					{ID: 3, Title: "Task 3", Date: "20250205", Comment: "The 3 task"},
@@ -60,9 +60,9 @@ func TestReadHandler(t *testing.T) {
 		},
 		{
 			name:   "Search by payload",
-			search: "ask",
+			search: "Task",
 			mockSetup: func(m *mocks.TaskReader) {
-				m.On("Tasks", mock.Anything, "").Return([]models.Task{
+				m.On("Tasks", mock.Anything, "Task").Return([]models.Task{
 					{ID: 1, Title: "Task 1", Date: "20250205", Comment: "The 1 task"},
 					{ID: 2, Title: "Task 2", Date: "20250205", Comment: "The 2 task"},
 					{ID: 3, Title: "Task 3", Date: "20250205", Comment: "The 3 task"},

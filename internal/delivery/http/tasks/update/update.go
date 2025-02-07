@@ -27,6 +27,7 @@ type Response struct {
 	Err string `json:"error,omitempty"`
 }
 
+//go:generate go run github.com/vektra/mockery/v2@v2.52.1 --name=TaskUpdater
 type TaskUpdater interface {
 	Update(ctx context.Context, id int64, date, title, comment, repeat string) error
 }

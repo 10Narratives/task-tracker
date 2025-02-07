@@ -6,12 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )
 
-// TODO: Сделать валидацию параметров URL с помощью validator
-// TODO: Написать unit-тестирование для этого обработчика
 // TODO: Написать документацию для структуры ответа и интерфейса
 // TODO: Написать документацию для обработчика с помощью Swagger
 
@@ -19,13 +16,14 @@ type Response struct {
 	Err string `json:"error,omitempty"`
 }
 
+//go:generate go run github.com/vektra/mockery/v2@v2.52.1 --name=TaskCompleter
 type TaskCompleter interface {
 	Complete(ctx context.Context, id int64) error
 }
 
 func New(logger *slog.Logger, tc TaskCompleter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		param := chi.URLParam(r, "id")
+		param := r.URL.Query().Get("id")
 		id, err := strconv.Atoi(param)
 		if err != nil {
 			logger.Error("gotten invalid id")
