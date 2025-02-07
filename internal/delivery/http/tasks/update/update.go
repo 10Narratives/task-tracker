@@ -11,6 +11,10 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+// TODO: Написать unit-тестирование для этого обработчика
+// TODO: Написать документацию для структуры ответа и интерфейса
+// TODO: Написать документацию для обработчика с помощью Swagger
+
 type Request struct {
 	ID      string `json:"id" validate:"required"`
 	Date    string `json:"date" validate:"required,dateformat"`
