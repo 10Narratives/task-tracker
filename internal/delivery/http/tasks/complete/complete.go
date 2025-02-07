@@ -10,6 +10,11 @@ import (
 	"github.com/go-chi/render"
 )
 
+// TODO: Сделать валидацию параметров URL с помощью validator
+// TODO: Написать unit-тестирование для этого обработчика
+// TODO: Написать документацию для структуры ответа и интерфейса
+// TODO: Написать документацию для обработчика с помощью Swagger
+
 type Response struct {
 	Err string `json:"error,omitempty"`
 }
