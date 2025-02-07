@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/10Narratives/task-tracker/internal/models"
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )
 
@@ -26,13 +25,14 @@ type Response struct {
 	Err     string `json:"error,omitempty"`
 }
 
+//go:generate go run github.com/vektra/mockery/v2@v2.52.1 --name=TaskReader
 type TaskReader interface {
 	Task(ctx context.Context, id int64) (models.Task, error)
 }
 
 func New(logger *slog.Logger, tr TaskReader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		param := chi.URLParam(r, "id")
+		param := r.URL.Query().Get("id")
 		id, err := strconv.Atoi(param)
 		if err != nil {
 			logger.Error("failed to covert id")
@@ -63,7 +63,7 @@ func New(logger *slog.Logger, tr TaskReader) http.HandlerFunc {
 			Date:    task.Date,
 			Title:   task.Title,
 			Comment: task.Comment,
-			Repeat:  task.Comment,
+			Repeat:  task.Repeat,
 		})
 		return
 	}
