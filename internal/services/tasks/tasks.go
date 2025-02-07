@@ -9,6 +9,10 @@ import (
 	"github.com/10Narratives/task-tracker/internal/storage"
 )
 
+// TODO: Перенести сюда интерфейс хранилища
+// TODO: Написать тесты для всех методов
+// TODO: Написать документацию
+
 type TaskService struct {
 	storage storage.TaskStorage
 }
