@@ -75,10 +75,10 @@ func TestDeleteHandler(t *testing.T) {
 				url += "?id=" + tc.id
 			}
 
-			req := httptest.NewRequest(http.MethodPost, url, nil)
+			req := httptest.NewRequest(http.MethodDelete, url, nil)
 			rec := httptest.NewRecorder()
 			r := chi.NewRouter()
-			r.Post(`/api/tasks/done`, handler)
+			r.Delete(`/api/tasks/done`, handler)
 			r.ServeHTTP(rec, req)
 
 			assert.Equal(t, tc.wantStatus, rec.Code)
