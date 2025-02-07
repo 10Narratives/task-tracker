@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )
 
@@ -19,13 +18,14 @@ type Response struct {
 	Err string `json:"error,omitempty"`
 }
 
+//go:generate go run github.com/vektra/mockery/v2@v2.52.1 --name=TaskRemover
 type TaskRemover interface {
 	Delete(ctx context.Context, id int64) error
 }
 
 func New(logger *slog.Logger, tr TaskRemover) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		param := chi.URLParam(r, "id")
+		param := r.URL.Query().Get("id")
 		id, err := strconv.Atoi(param)
 		if err != nil {
 			logger.Error("gotten invalid id")
