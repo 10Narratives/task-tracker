@@ -12,6 +12,8 @@ import (
 // TODO: Написать документацию для структуры ответа и интерфейса
 // TODO: Написать документацию для обработчика с помощью Swagger
 
+const op = "http.Complete"
+
 type Response struct {
 	Err string `json:"error,omitempty"`
 }
@@ -23,6 +25,8 @@ type TaskCompleter interface {
 
 func New(logger *slog.Logger, tc TaskCompleter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger := logger.With("op", op)
+
 		param := r.URL.Query().Get("id")
 		id, err := strconv.Atoi(param)
 		if err != nil {
@@ -40,6 +44,7 @@ func New(logger *slog.Logger, tc TaskCompleter) http.HandlerFunc {
 			return
 		}
 
+		logger.Info("task was completed")
 		render.JSON(w, r, Response{})
 	}
 }

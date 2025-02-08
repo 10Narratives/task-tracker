@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/10Narratives/task-tracker/internal/config"
+	"github.com/10Narratives/task-tracker/pkg/logging/slogpretty"
 )
 
 // MustLogger initializes and returns a structured logger based on the provided environment.
@@ -29,7 +30,7 @@ func MustLogger(env string) *slog.Logger {
 
 	switch env {
 	case config.EnvLocal:
-		logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+		logger = setupPrettySlog()
 	case config.EnvDev:
 		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
 	case config.EnvProd:
@@ -39,4 +40,16 @@ func MustLogger(env string) *slog.Logger {
 	}
 
 	return logger
+}
+
+func setupPrettySlog() *slog.Logger {
+	opts := slogpretty.PrettyHandlerOptions{
+		SlogOpts: &slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		},
+	}
+
+	handler := opts.NewPrettyHandler(os.Stdout)
+
+	return slog.New(handler)
 }

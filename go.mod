@@ -2,6 +2,8 @@ module github.com/10Narratives/task-tracker
 
 go 1.23.5
 
+require github.com/fatih/color v1.18.0
+
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
