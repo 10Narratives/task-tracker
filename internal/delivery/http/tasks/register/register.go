@@ -16,6 +16,8 @@ import (
 // TODO: Написать документацию для структуры ответа и интерфейса
 // TODO: Написать документацию для обработчика с помощью Swagger
 
+const op = "http.Register"
+
 type Request struct {
 	Date    string `json:"date" validate:"required,dateformat"`
 	Title   string `json:"title" validate:"required,title"`
@@ -35,6 +37,8 @@ type TaskRegistrar interface {
 
 func New(log *slog.Logger, ts TaskRegistrar) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log := log.With(slog.String("op", op))
+
 		var req Request
 		err := render.DecodeJSON(r.Body, &req)
 		if errors.Is(err, io.EOF) {

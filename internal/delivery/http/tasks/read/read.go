@@ -9,6 +9,8 @@ import (
 	"github.com/go-chi/render"
 )
 
+const op = "http.Read"
+
 type Response struct {
 	Tasks []models.Task `json:"tasks,omitempty"`
 	Err   string        `json:"error,omitempty"`
@@ -21,6 +23,8 @@ type TaskReader interface {
 
 func New(logger *slog.Logger, tr TaskReader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger := logger.With(slog.String("op", op))
+
 		search := r.URL.Query().Get("search")
 		tasks, err := tr.Tasks(context.Background(), search)
 		if err != nil {

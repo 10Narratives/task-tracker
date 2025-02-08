@@ -14,6 +14,8 @@ import (
 // TODO: Написать документацию для структуры ответа и интерфейса
 // TODO: Написать документацию для обработчика с помощью Swagger
 
+const op = "http.Readone"
+
 type Response struct {
 	ID      string `json:"id,omitempty"`
 	Date    string `json:"date,omitempty"`
@@ -30,6 +32,7 @@ type TaskReader interface {
 
 func New(logger *slog.Logger, tr TaskReader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger := logger.With(slog.String("op", op))
 		param := r.URL.Query().Get("id")
 		id, err := strconv.Atoi(param)
 		if err != nil {

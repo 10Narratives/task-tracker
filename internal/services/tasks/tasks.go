@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/10Narratives/task-tracker/internal/models"
@@ -114,7 +115,13 @@ func (service TaskService) Complete(ctx context.Context, id int64) error {
 	}
 
 	parsed, _ := time.Parse(nextdate.DateLayout, task.Date)
+	fmt.Println(task)
 	task.Date = nextdate.NextDate(time.Now(), parsed, task.Repeat)
+	fmt.Println(task)
+	err = service.storage.Update(ctx, &task)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -14,6 +14,8 @@ import (
 // TODO: Написать документацию для структуры ответа и интерфейса
 // TODO: Написать документацию для обработчика с помощью Swagger
 
+const op = "http.Update"
+
 type Request struct {
 	ID      string `json:"id" validate:"required"`
 	Date    string `json:"date" validate:"required,dateformat"`
@@ -33,6 +35,8 @@ type TaskUpdater interface {
 
 func New(logger *slog.Logger, tu TaskUpdater) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger := logger.With(slog.String("op", op))
+
 		var req Request
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
@@ -63,6 +67,7 @@ func New(logger *slog.Logger, tu TaskUpdater) http.HandlerFunc {
 			return
 		}
 
+		logger.Info("task was updated")
 		render.JSON(w, r, Response{})
 	}
 }
