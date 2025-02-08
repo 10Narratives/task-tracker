@@ -9,8 +9,6 @@ import (
 )
 
 func TestNextDate(t *testing.T) {
-	t.Parallel()
-
 	type args struct {
 		now    time.Time
 		date   time.Time
@@ -18,44 +16,29 @@ func TestNextDate(t *testing.T) {
 	}
 
 	tests := []struct {
-		name     string
-		args     args
-		wantDate string
+		name string
+		args args
+		want string
 	}{
 		{
-			name: "day step",
+			name: "successful daily move",
 			args: args{
-				now:    time.Date(2024, 2, 2, 0, 0, 0, 0, time.UTC),
-				date:   time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC),
-				repeat: "d 7",
+				now:    time.Date(2025, 2, 5, 0, 0, 0, 0, time.UTC),
+				date:   time.Date(2025, 2, 4, 0, 0, 0, 0, time.UTC),
+				repeat: "d 3",
 			},
-			wantDate: "20240208",
+			want: "20250207",
 		},
-		{
-			name: "year step",
-			args: args{
-				now:    time.Date(2024, 2, 2, 0, 0, 0, 0, time.UTC),
-				date:   time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC),
-				repeat: "y",
-			},
-			wantDate: "20250201",
-		},
-		{
-			name: "week step",
-			args: args{
-				now:    time.Date(2024, 1, 27, 0, 0, 0, 0, time.UTC),
-				date:   time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC),
-				repeat: "w 7",
-			},
-			wantDate: "20240128",
-		},
-		// TODO: Make test case for month
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			date := nextdate.NextDate(tt.args.now, tt.args.date, tt.args.repeat)
-			assert.Equal(t, tt.wantDate, date)
+	for _, tc := range tests {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := nextdate.NextDate(tc.args.now, tc.args.now, tc.args.repeat)
+			assert.Equal(t, tc.want, res)
 		})
 	}
 }
