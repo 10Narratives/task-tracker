@@ -9,8 +9,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// TODO: Написать валидацию для id
-
 // IsDateValid checks if date field is in YYYYMMDD format
 func IsDateValid(fl validator.FieldLevel) bool {
 	date := fl.Field().String()

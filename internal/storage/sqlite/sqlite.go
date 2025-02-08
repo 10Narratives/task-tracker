@@ -7,6 +7,8 @@ import (
 	"fmt"
 
 	"github.com/10Narratives/task-tracker/internal/models"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type TaskStorage struct {

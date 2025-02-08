@@ -8,8 +8,6 @@ import (
 	"github.com/10Narratives/task-tracker/internal/services/nextdate"
 )
 
-// TODO: Написать тесты для всех методов
-
 // TaskStorage is an interface for working with task storage.
 // It defines methods for creating, reading, updating, and deleting tasks.
 //
