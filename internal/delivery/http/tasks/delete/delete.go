@@ -25,9 +25,9 @@ type TaskRemover interface {
 
 func New(logger *slog.Logger, tr TaskRemover) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		logger := logger.With(slog.String("op", op))
-
 		param := r.URL.Query().Get("id")
+		logger := logger.With(slog.String("op", op), slog.String("id", param))
+
 		id, err := strconv.Atoi(param)
 		if err != nil {
 			logger.Error("gotten invalid id")
@@ -35,7 +35,6 @@ func New(logger *slog.Logger, tr TaskRemover) http.HandlerFunc {
 			render.JSON(w, r, Response{Err: "gotten invalid id"})
 			return
 		}
-
 		err = tr.Delete(context.Background(), int64(id))
 		if err != nil {
 			logger.Error("failed to delete task")

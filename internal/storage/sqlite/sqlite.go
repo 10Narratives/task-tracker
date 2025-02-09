@@ -163,6 +163,7 @@ func (s TaskStorage) ReadByDate(ctx context.Context, date string) ([]models.Task
 // - []models.Task: A slice of matching tasks, ordered by date.
 // - error: Returns ErrEmptyPayload if the payload is empty or a wrapped error if the query fails.
 func (s TaskStorage) ReadByPayload(ctx context.Context, payload string) ([]models.Task, error) {
+	payload = "%" + payload + "%"
 	query := `SELECT id, date, title, comment, repeat FROM scheduler WHERE title LIKE ? OR comment LIKE ? ORDER BY date LIMIT ?`
 	return s.queryTasks(ctx, query, payload, payload, s.Limit)
 }
