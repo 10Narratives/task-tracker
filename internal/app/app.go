@@ -19,6 +19,9 @@ import (
 	"github.com/10Narratives/task-tracker/pkg/logging"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
+
+	_ "github.com/10Narratives/task-tracker/docs"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 type App struct {
@@ -63,6 +66,10 @@ func (app *App) Run() {
 	router.Delete("/api/task", delete.New(app.logger, service))
 	router.Post("/api/task/done", complete.New(app.logger, service))
 	router.Delete("/api/task/done", delete.New(app.logger, service))
+
+	router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8000/swagger/doc.json"),
+	))
 
 	app.logger.Info("router initialized successfully")
 

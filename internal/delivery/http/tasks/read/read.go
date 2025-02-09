@@ -21,13 +21,14 @@ type TaskReader interface {
 	Tasks(ctx context.Context, search string) ([]models.Task, error)
 }
 
-func New(logger *slog.Logger, tr TaskReader) http.HandlerFunc {
+func New(log *slog.Logger, tr TaskReader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		logger := logger.With(slog.String("op", op))
-
 		search := r.URL.Query().Get("search")
+
+		logger := log.With(slog.String("op", op), slog.String("search", search))
 		tasks, err := tr.Tasks(context.Background(), search)
 		if err != nil {
+			logger.Error(err.Error())
 			logger.Error("failed to read tasks")
 			w.WriteHeader(http.StatusInternalServerError)
 			render.JSON(w, r, Response{Err: "failed to read tasks"})

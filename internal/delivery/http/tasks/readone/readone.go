@@ -32,8 +32,9 @@ type TaskReader interface {
 
 func New(logger *slog.Logger, tr TaskReader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		logger := logger.With(slog.String("op", op))
 		param := r.URL.Query().Get("id")
+		logger := logger.With(slog.String("op", op), slog.String("id", param))
+
 		id, err := strconv.Atoi(param)
 		if err != nil {
 			logger.Error("failed to covert id")

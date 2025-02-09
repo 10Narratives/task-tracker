@@ -1,0 +1,20 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "REST API server for TODO Application",
+        "title": "Task Tracker App",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/api/task/done": {
+            "post": {
+                "description": "Complete target task (delete it or change deadline date)",
+                "summary": "Complete task by its ID",
+                "responses": {}
+            }
+        }
+    }
+}

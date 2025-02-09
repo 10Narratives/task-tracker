@@ -21,7 +21,7 @@ type Request struct {
 	Date    string `json:"date" validate:"required,dateformat"`
 	Title   string `json:"title" validate:"required,title"`
 	Comment string `json:"comment" validate:"required"`
-	Repeat  string `json:"repeat" validate:"required,repeat"`
+	Repeat  string `json:"repeat" validate:"repeat"`
 }
 
 type Response struct {
@@ -45,6 +45,8 @@ func New(logger *slog.Logger, tu TaskUpdater) http.HandlerFunc {
 			render.JSON(w, r, Response{Err: "failed to decode request body"})
 			return
 		}
+
+		logger.Info("request body decoded", slog.Any("request", req))
 
 		v := validator.New()
 		v.RegisterValidation("dateformat", validation.IsDateValid)

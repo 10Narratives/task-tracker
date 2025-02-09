@@ -32,3 +32,4 @@ config
 
 # Databases
 *.db
+sqlite3

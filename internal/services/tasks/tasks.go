@@ -2,7 +2,6 @@ package tasks
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/10Narratives/task-tracker/internal/models"
@@ -76,8 +75,8 @@ func (service TaskService) Tasks(ctx context.Context, search string) ([]models.T
 	)
 	if search == "" {
 		tasks, err = service.storage.ReadGroup(ctx)
-	} else if _, isDate := time.Parse("20060102", search); isDate == nil {
-		tasks, err = service.storage.ReadByDate(ctx, search)
+	} else if date, isDate := time.Parse("02.01.2006", search); isDate == nil {
+		tasks, err = service.storage.ReadByDate(ctx, date.Format("20060102"))
 	} else {
 		tasks, err = service.storage.ReadByPayload(ctx, search)
 	}
@@ -115,9 +114,7 @@ func (service TaskService) Complete(ctx context.Context, id int64) error {
 	}
 
 	parsed, _ := time.Parse(nextdate.DateLayout, task.Date)
-	fmt.Println(task)
 	task.Date = nextdate.NextDate(time.Now(), parsed, task.Repeat)
-	fmt.Println(task)
 	err = service.storage.Update(ctx, &task)
 	if err != nil {
 		return err
