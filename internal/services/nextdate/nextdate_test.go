@@ -8,12 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// 20240126
-
-//{"20240125", "w 1,2,3", "20240129"},
-//{"20240126", "w 7", "20240128"},
-//{"20230126", "w 4,5", "20240201"},
-
 func TestNextDate(t *testing.T) {
 	type args struct {
 		now    time.Time
@@ -96,6 +90,61 @@ func TestNextDate(t *testing.T) {
 			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2023, 1, 26, 0, 0, 0, 0, time.UTC), repeat: "w 4,5"},
 			want: "20240201",
 		},
+		{
+			name: "m 13",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2023, 11, 6, 0, 0, 0, 0, time.UTC), repeat: "m 13"},
+			want: "20240213",
+		},
+		{
+			name: "m 16,5",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2024, 1, 16, 0, 0, 0, 0, time.UTC), repeat: "m 16,5"},
+			want: "20240205",
+		},
+		{
+			name: "m 25,26,7",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), repeat: "m 25,26,7"},
+			want: "20240207",
+		}, //
+		{
+			name: "m 31",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2024, 4, 9, 0, 0, 0, 0, time.UTC), repeat: "m 31"},
+			want: "20240531",
+		}, //
+		{
+			name: "m 10,17 12,8,1",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2024, 3, 29, 0, 0, 0, 0, time.UTC), repeat: "m 10,17 12,8,1"},
+			want: "20240810",
+		},
+		{
+			name: "m 07,19 05,6",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2023, 3, 11, 0, 0, 0, 0, time.UTC), repeat: "m 07,19 05,6"},
+			want: "20240507",
+		},
+		{
+			name: "m 1 1,2",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2023, 3, 11, 0, 0, 0, 0, time.UTC), repeat: "m 1 1,2"},
+			want: "20240201",
+		},
+		{
+			name: "m -1",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2024, 1, 27, 0, 0, 0, 0, time.UTC), repeat: "m -1"},
+			want: "20240131",
+		},
+		{
+			name: "m -2",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2024, 2, 22, 0, 0, 0, 0, time.UTC), repeat: "m -2"},
+			want: "20240228",
+		}, //
+		{
+			name: "m -1,-2",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2024, 3, 26, 0, 0, 0, 0, time.UTC), repeat: "m -1,-2"},
+			want: "20240330",
+		}, //
+		{
+			name: "m -1,18",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC), repeat: "m -1,18"},
+			want: "20240218",
+		}, //
 	}
 
 	for _, tc := range tests {
