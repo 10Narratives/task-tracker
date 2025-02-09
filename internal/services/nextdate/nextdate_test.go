@@ -8,24 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-/*
-	{"20240113", "d 7", `20240127`},
-	{"20240120", "d 20", `20240209`},
-	{"20240202", "d 30", `20240303`},
-	{"20240320", "d 401", ""},
-	{"20231225", "d 12", `20240130`},
-	{"20240228", "d 1", "20240229"},
-
-	{"16890220", "y", `20240220`},
-	{"20250701", "y", `20260701`},
-	{"20240101", "y", `20250101`},
-	{"20231231", "y", `20241231`},
-	{"20240229", "y", `20250301`},
-	{"20240301", "y", `20250301`},
-
-*/
-
 // 20240126
+
+//{"20240125", "w 1,2,3", "20240129"},
+//{"20240126", "w 7", "20240128"},
+//{"20230126", "w 4,5", "20240201"},
 
 func TestNextDate(t *testing.T) {
 	type args struct {
@@ -94,13 +81,28 @@ func TestNextDate(t *testing.T) {
 			args: args{now: time.Date(2024, 1, 9, 0, 0, 0, 0, time.UTC), date: time.Date(2023, 1, 9, 0, 0, 0, 0, time.UTC), repeat: "y"},
 			want: "20250109",
 		},
+		{
+			name: "successful weekly move",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2024, 1, 25, 0, 0, 0, 0, time.UTC), repeat: "w 1,2,3"},
+			want: "20240129",
+		},
+		{
+			name: "successful weekly move",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), repeat: "w 7"},
+			want: "20240128",
+		},
+		{
+			name: "successful weekly move",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2023, 1, 26, 0, 0, 0, 0, time.UTC), repeat: "w 4,5"},
+			want: "20240201",
+		},
 	}
 
 	for _, tc := range tests {
 		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
-			// t.Parallel()
+			//t.Parallel()
 
 			res := nextdate.NextDate(tc.args.now, tc.args.date, tc.args.repeat)
 			assert.Equal(t, tc.want, res)
