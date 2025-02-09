@@ -15,6 +15,14 @@ import (
 	{"20240320", "d 401", ""},
 	{"20231225", "d 12", `20240130`},
 	{"20240228", "d 1", "20240229"},
+
+	{"16890220", "y", `20240220`},
+	{"20250701", "y", `20260701`},
+	{"20240101", "y", `20250101`},
+	{"20231231", "y", `20241231`},
+	{"20240229", "y", `20250301`},
+	{"20240301", "y", `20250301`},
+
 */
 
 // 20240126
@@ -61,13 +69,38 @@ func TestNextDate(t *testing.T) {
 			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2024, 1, 27, 0, 0, 0, 0, time.UTC), repeat: "d 1"},
 			want: "20240128",
 		},
+		{
+			name: "successful yearly move",
+			args: args{now: time.Date(2024, 1, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2023, 2, 20, 0, 0, 0, 0, time.UTC), repeat: "y"},
+			want: "20240220",
+		},
+		{
+			name: "successful yearly move",
+			args: args{now: time.Date(2024, 2, 26, 0, 0, 0, 0, time.UTC), date: time.Date(2023, 1, 26, 0, 0, 0, 0, time.UTC), repeat: "y"},
+			want: "20250126",
+		},
+		{
+			name: "successful yearly move",
+			args: args{now: time.Date(2024, 1, 9, 0, 0, 0, 0, time.UTC), date: time.Date(2023, 1, 10, 0, 0, 0, 0, time.UTC), repeat: "y"},
+			want: "20240110",
+		},
+		{
+			name: "successful yearly move",
+			args: args{now: time.Date(2024, 1, 10, 0, 0, 0, 0, time.UTC), date: time.Date(2023, 1, 9, 0, 0, 0, 0, time.UTC), repeat: "y"},
+			want: "20250109",
+		},
+		{
+			name: "successful yearly move",
+			args: args{now: time.Date(2024, 1, 9, 0, 0, 0, 0, time.UTC), date: time.Date(2023, 1, 9, 0, 0, 0, 0, time.UTC), repeat: "y"},
+			want: "20250109",
+		},
 	}
 
 	for _, tc := range tests {
 		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
+			// t.Parallel()
 
 			res := nextdate.NextDate(tc.args.now, tc.args.date, tc.args.repeat)
 			assert.Equal(t, tc.want, res)
