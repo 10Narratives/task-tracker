@@ -1,0 +1,14 @@
+basePath: /
+host: localhost:8080
+info:
+  contact: {}
+  description: REST API server for TODO Application
+  title: Task Tracker App
+  version: "1.0"
+paths:
+  /api/task/done:
+    post:
+      description: Complete target task (delete it or change deadline date)
+      responses: {}
+      summary: Complete task by its ID
+swagger: "2.0"

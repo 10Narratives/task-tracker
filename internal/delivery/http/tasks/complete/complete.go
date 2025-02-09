@@ -23,6 +23,9 @@ type TaskCompleter interface {
 	Complete(ctx context.Context, id int64) error
 }
 
+// @Summary Complete task by its ID
+// @Description Complete target task (delete it or change deadline date)
+// @Router /api/task/done [post]
 func New(log *slog.Logger, tc TaskCompleter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		logger := log.With("op", op)
