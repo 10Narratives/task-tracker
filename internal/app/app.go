@@ -44,7 +44,7 @@ func New() App {
 
 func (app *App) Run() {
 	app.logger.Info("Starting to create database connection")
-	db, close, err := storage.OpenDB(app.cfg.Storage.DriverName, app.cfg.Storage.DriverName)
+	db, close, err := storage.OpenDB(app.cfg.Storage.DriverName, app.cfg.Storage.DriverName) // FIXME: change OpenDB parameters
 	if err != nil {
 		app.logger.Error(err.Error())
 		os.Exit(1)
