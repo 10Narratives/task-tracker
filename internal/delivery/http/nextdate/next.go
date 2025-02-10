@@ -11,7 +11,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// TODO: Написать unit-тесты для этого обработчика
 // TODO: Написать документацию для обработчика с помощью Swagger
 
 type URLParams struct {
