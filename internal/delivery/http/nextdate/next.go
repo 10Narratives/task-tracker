@@ -17,7 +17,7 @@ import (
 type URLParams struct {
 	Now    string `json:"now" validate:"required,dateformat"`
 	Date   string `json:"date" validate:"required,dateformat"`
-	Repeat string `json:"repeat" validate:"required,repeat"`
+	Repeat string `json:"repeat" validate:"repeat"`
 }
 
 type Response struct {
@@ -27,11 +27,10 @@ type Response struct {
 
 func New(logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		query := r.URL.Query()
 		params := URLParams{
-			Now:    query.Get("now"),
-			Date:   query.Get("date"),
-			Repeat: query.Get("repeat"),
+			Now:    r.URL.Query().Get("now"),
+			Date:   r.URL.Query().Get("date"),
+			Repeat: r.URL.Query().Get("repeat"),
 		}
 
 		v := validator.New()
