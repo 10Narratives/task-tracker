@@ -20,7 +20,7 @@ type Request struct {
 	ID      string `json:"id" validate:"required"`
 	Date    string `json:"date" validate:"required,dateformat"`
 	Title   string `json:"title" validate:"required,title"`
-	Comment string `json:"comment" validate:"required"`
+	Comment string `json:"comment"`
 	Repeat  string `json:"repeat" validate:"repeat"`
 }
 
@@ -55,6 +55,7 @@ func New(logger *slog.Logger, tu TaskUpdater) http.HandlerFunc {
 		if err := v.Struct(req); err != nil {
 			validationErr := err.(validator.ValidationErrors)
 			logger.Error("invalid request")
+			logger.Error(validation.ValidationErrorMsg(validationErr))
 			w.WriteHeader(http.StatusBadRequest)
 			render.JSON(w, r, Response{Err: validation.ValidationErrorMsg(validationErr)})
 			return
