@@ -21,6 +21,13 @@ type TaskReader interface {
 	Tasks(ctx context.Context, search string) ([]models.Task, error)
 }
 
+// @Summary Get tasks
+// @Description Retrieve tasks optionally filtered by a search query
+// @Produce json
+// @Param search query string false "Search filter"
+// @Success 200 {object} Response
+// @Failure 500 {object} Response "Failed to read tasks"
+// @Router /api/tasks [get]
 func New(log *slog.Logger, tr TaskReader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		search := r.URL.Query().Get("search")

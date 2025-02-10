@@ -9,9 +9,6 @@ import (
 	"github.com/go-chi/render"
 )
 
-// TODO: Написать документацию для структуры ответа и интерфейса
-// TODO: Написать документацию для обработчика с помощью Swagger
-
 const op = "http.Complete"
 
 type Response struct {
@@ -24,7 +21,12 @@ type TaskCompleter interface {
 }
 
 // @Summary Complete task by its ID
-// @Description Complete target task (delete it or change deadline date)
+// @Description Mark task as completed, either by deleting it or modifying its deadline
+// @Produce json
+// @Param id query int true "Task ID"
+// @Success 200 {object} Response
+// @Failure 400 {object} Response "Invalid task ID"
+// @Failure 500 {object} Response "Failed to complete task"
 // @Router /api/task/done [post]
 func New(log *slog.Logger, tc TaskCompleter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

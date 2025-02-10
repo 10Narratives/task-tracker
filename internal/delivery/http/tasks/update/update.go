@@ -33,6 +33,15 @@ type TaskUpdater interface {
 	Update(ctx context.Context, id int64, date, title, comment, repeat string) error
 }
 
+// @Summary Update an existing task
+// @Description Modify the details of an existing task by its ID
+// @Accept json
+// @Produce json
+// @Param request body Request true "Task data to update"
+// @Success 200 {object} Response
+// @Failure 400 {object} Response "Invalid request format or missing fields"
+// @Failure 500 {object} Response "Failed to update task"
+// @Router /api/task [put]
 func New(logger *slog.Logger, tu TaskUpdater) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		logger := logger.With(slog.String("op", op))
