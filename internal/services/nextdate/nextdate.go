@@ -1,7 +1,6 @@
 package nextdate
 
 import (
-	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -41,51 +40,55 @@ func shiftWeekly(base time.Time, weekdays []int) time.Time {
 	return base.AddDate(0, 0, 7+weekdays[0]-baseWeekday)
 }
 
-func shiftMonthly(base time.Time, days []int, months []int) time.Time {
-	year, month, day := base.Date()
-	loc := base.Location()
+func daysInMonth(month time.Month, year int) int {
+	return time.Date(year, month+1, 0, 0, 0, 0, 0, time.UTC).Day()
+}
 
-	// Сортируем список дней, чтобы найти ближайший
+func normalizeDays(days []int, month time.Month, year int) []int {
+	totalDays := daysInMonth(month, year)
+	for i := range len(days) {
+		if days[i] == -1 || days[i] == -2 {
+			days[i] += totalDays + 1
+		}
+	}
 	sort.Ints(days)
+	return days
+}
 
-	for i := 0; i < 24; i++ { // Проверяем ближайшие 24 месяца
-		// Проверяем, подходит ли месяц
-		if len(months) > 0 && !slices.Contains(months, int(month)) {
-			month++
-			if month > 12 {
-				year++
-				month = 1
+func shiftMonthly(now time.Time, days []int, months []int) time.Time {
+	currYear, currMonth, currDay := now.Date()
+
+	allowedMonths := make(map[int]bool)
+	for _, m := range months {
+		allowedMonths[m] = true
+	}
+
+	for {
+		if len(allowedMonths) > 0 && !allowedMonths[int(currMonth)] {
+			currMonth++
+			if currMonth > 12 {
+				currMonth = 1
+				currYear++
 			}
+			currDay = 0
 			continue
 		}
 
-		// Определяем последний день месяца
-		lastDay := time.Date(year, month+1, 0, 0, 0, 0, 0, loc).Day()
-
-		// Проверяем возможные дни в этом месяце
-		for _, d := range days {
-			targetDay := d
-			if d == -1 {
-				targetDay = lastDay
-			} else if d == -2 {
-				targetDay = lastDay - 1
-			}
-
-			// Если день корректен и не в прошлом, возвращаем его
-			if (year > base.Year() || month > base.Month() || targetDay >= day) && targetDay <= lastDay {
-				return time.Date(year, month, targetDay, 0, 0, 0, 0, loc)
-			}
+		monthDays := make([]int, len(days))
+		copy(monthDays, days)
+		monthDays = normalizeDays(monthDays, currMonth, currYear)
+		index := sort.Search(len(days), func(i int) bool { return monthDays[i] > currDay })
+		if index != len(days) {
+			return time.Date(currYear, currMonth, monthDays[index], 0, 0, 0, 0, time.UTC)
 		}
 
-		// Переход на следующий месяц
-		month++
-		if month > 12 {
-			year++
-			month = 1
+		currMonth++
+		if currMonth == 12 {
+			currMonth = 1
+			currYear++
 		}
+		currDay = 0
 	}
-
-	return base // Если не найдено, возвращаем исходную дату
 }
 
 // NextDate calculates the next occurrence of a date based on a given repetition pattern.
