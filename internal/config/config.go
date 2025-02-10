@@ -39,6 +39,8 @@ type StorageConfig struct {
 
 	// DataSourceName defines source name for the database
 	DataSourceName string `yaml:"dsn" env-default:"scheduler.db"`
+
+	PaginationLimit uint `yaml:"limit" env-default:"10"`
 }
 
 // HTTPServerConfig holds configuration values for the HTTP server.

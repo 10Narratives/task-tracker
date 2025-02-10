@@ -44,7 +44,7 @@ func New() App {
 
 func (app *App) Run() {
 	app.logger.Info("Starting to create database connection")
-	db, close, err := storage.OpenDB(app.cfg.Storage.DriverName, app.cfg.Storage.DriverName) // FIXME: change OpenDB parameters
+	db, close, err := storage.OpenDB(app.cfg.Storage.DriverName, app.cfg.Storage.DataSourceName)
 	if err != nil {
 		app.logger.Error(err.Error())
 		os.Exit(1)
@@ -53,8 +53,12 @@ func (app *App) Run() {
 	app.logger.Info("database connection created successfully")
 
 	app.logger.Info("starting to initialize task service")
-	store := sqlite.New(db, 10)
-	store.Prepare()
+	store := sqlite.New(db, app.cfg.Storage.PaginationLimit)
+	err = store.Prepare()
+	if err != nil {
+		app.logger.Error("can not prepare database:" + err.Error())
+		os.Exit(1)
+	}
 	service := tasks.New(store)
 	app.logger.Info("task service initialized successfully")
 

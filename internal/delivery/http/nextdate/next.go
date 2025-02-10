@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/10Narratives/task-tracker/internal/delivery/http/validation"
+	"github.com/10Narratives/task-tracker/internal/lib"
 	"github.com/10Narratives/task-tracker/internal/services/nextdate"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
@@ -47,8 +48,8 @@ func New(logger *slog.Logger) http.HandlerFunc {
 
 		logger.Info("getting nextdate")
 
-		now, _ := time.Parse("20060102", params.Now)
-		date, _ := time.Parse("20060102", params.Now)
+		now, _ := time.Parse(lib.DateFormat, params.Now)
+		date, _ := time.Parse(lib.DateFormat, params.Now)
 		nextdate := nextdate.NextDate(now, date, params.Repeat)
 		render.JSON(w, r, Response{NextDate: nextdate})
 	}
