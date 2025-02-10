@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/10Narratives/task-tracker/internal/config"
+	mw_logging "github.com/10Narratives/task-tracker/internal/delivery/http/middleware/logging"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/complete"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/delete"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/read"
@@ -58,6 +59,8 @@ func (app *App) Run() {
 
 	app.logger.Info("starting to initialize router")
 	router := chi.NewRouter()
+	router.Use(mw_logging.New(app.logger))
+
 	router.Handle("/*", http.StripPrefix("/", http.FileServer(http.Dir(app.cfg.HTTP.FileServerPath))))
 	router.Post("/api/task", register.New(app.logger, service))
 	router.Get("/api/tasks", read.New(app.logger, service))
