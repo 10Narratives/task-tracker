@@ -6,13 +6,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/10Narratives/task-tracker/internal/lib"
 	"github.com/go-playground/validator/v10"
 )
 
 // IsDateValid checks if date field is in YYYYMMDD format
 func IsDateValid(fl validator.FieldLevel) bool {
 	date := fl.Field().String()
-	_, err := time.Parse("20060102", date)
+	_, err := time.Parse(lib.DateFormat, date)
 	return err == nil
 }
 

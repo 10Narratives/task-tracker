@@ -275,7 +275,7 @@ func TestTaskService_Tasks(t *testing.T) {
 						{ID: 4, Date: "20250206", Title: "Task 4", Comment: "Task 4 comment", Repeat: "d 7"},
 					}, nil)
 			},
-			args: args{search: "20250206"},
+			args: args{search: "06.02.2025"},
 			wantResult: func(tt require.TestingT, got interface{}, _ ...interface{}) {
 				tasks, ok := got.([]models.Task)
 				require.True(t, ok)
@@ -510,6 +510,9 @@ func TestTaskService_Complete(t *testing.T) {
 				m.
 					On("Read", mock.Anything, int64(100)).
 					Return(models.Task{ID: 100, Date: "20250402", Title: "Title", Comment: "Comment", Repeat: "d 7"}, nil)
+				m.
+					On("Update", mock.Anything, mock.Anything).
+					Return(nil)
 			},
 			args:    args{ctx: context.Background(), id: 100},
 			wantErr: require.NoError,
@@ -540,7 +543,7 @@ func TestTaskService_Complete(t *testing.T) {
 			wantErr: require.NoError,
 		},
 		{
-			name: "successful complete - without nextdate",
+			name: "unsuccessful complete - without nextdate",
 			mockSetup: func(m *mocks.TaskStorage) {
 				m.
 					On("Read", mock.Anything, int64(100)).

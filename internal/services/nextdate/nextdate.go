@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
-)
 
-const DateLayout = "20060102"
+	"github.com/10Narratives/task-tracker/internal/lib"
+)
 
 func shiftDaily(now, date time.Time, days int) time.Time {
 	diffDays := int(now.Sub(date).Hours() / 24)
@@ -94,9 +94,9 @@ func NextDate(now, date time.Time, repeat string) string {
 	switch repeat[0] {
 	case 'd':
 		days, _ := strconv.Atoi(repeat[2:])
-		nextdate = shiftDaily(now, date, days).Format(DateLayout)
+		nextdate = shiftDaily(now, date, days).Format(lib.DateFormat)
 	case 'y':
-		nextdate = shiftYearly(now, date).Format(DateLayout)
+		nextdate = shiftYearly(now, date).Format(lib.DateFormat)
 	case 'w':
 		weekdays := strings.Split(repeat[2:], ",")
 		days := make([]int, len(weekdays))
@@ -104,7 +104,7 @@ func NextDate(now, date time.Time, repeat string) string {
 			days[i], _ = strconv.Atoi(weekday)
 		}
 		sort.Ints(days)
-		nextdate = shiftWeekly(now, days).Format(DateLayout)
+		nextdate = shiftWeekly(now, days).Format(lib.DateFormat)
 	case 'm':
 		strs := strings.Split(repeat, " ")
 
@@ -123,7 +123,7 @@ func NextDate(now, date time.Time, repeat string) string {
 				months = append(months, month)
 			}
 		}
-		nextdate = shiftMonthly(now, days, months).Format(DateLayout)
+		nextdate = shiftMonthly(now, days, months).Format(lib.DateFormat)
 	}
 	return nextdate
 }

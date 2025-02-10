@@ -9,11 +9,375 @@
     "host": "localhost:8080",
     "basePath": "/",
     "paths": {
+        "/api/task": {
+            "get": {
+                "description": "Retrieve a task using its unique identifier",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get task by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Task ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/readone.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid task ID",
+                        "schema": {
+                            "$ref": "#/definitions/readone.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Task not found",
+                        "schema": {
+                            "$ref": "#/definitions/readone.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to find task by ID",
+                        "schema": {
+                            "$ref": "#/definitions/readone.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Modify the details of an existing task by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Update an existing task",
+                "parameters": [
+                    {
+                        "description": "Task data to update",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/update.Request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/update.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request format or missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/update.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update task",
+                        "schema": {
+                            "$ref": "#/definitions/update.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new task with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Register a new task",
+                "parameters": [
+                    {
+                        "description": "Task data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/register.Request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/register.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request format or missing fields",
+                        "schema": {
+                            "$ref": "#/definitions/register.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to add task",
+                        "schema": {
+                            "$ref": "#/definitions/register.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Permanently remove a task from the system",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Delete task by its ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Task ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/delete.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid task ID",
+                        "schema": {
+                            "$ref": "#/definitions/delete.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to delete task",
+                        "schema": {
+                            "$ref": "#/definitions/delete.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/task/done": {
             "post": {
-                "description": "Complete target task (delete it or change deadline date)",
+                "description": "Mark task as completed, either by deleting it or modifying its deadline",
+                "produces": [
+                    "application/json"
+                ],
                 "summary": "Complete task by its ID",
-                "responses": {}
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Task ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/complete.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid task ID",
+                        "schema": {
+                            "$ref": "#/definitions/complete.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to complete task",
+                        "schema": {
+                            "$ref": "#/definitions/complete.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tasks": {
+            "get": {
+                "description": "Retrieve tasks optionally filtered by a search query",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get tasks",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search filter",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/read.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to read tasks",
+                        "schema": {
+                            "$ref": "#/definitions/read.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "complete.Response": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "delete.Response": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Task": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "repeat": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "read.Response": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "tasks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Task"
+                    }
+                }
+            }
+        },
+        "readone.Response": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "repeat": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "register.Request": {
+            "type": "object",
+            "required": [
+                "date",
+                "title"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "repeat": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "register.Response": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "update.Request": {
+            "type": "object",
+            "required": [
+                "date",
+                "id",
+                "title"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "repeat": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "update.Response": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ env: "local" # local / dev / prod
 storage:
   driver: "sqlite3"
   dsn: "storage/scheduler.db"
+  limit: 10
 http_server: 
   address: "localhost"
   port: "8000"

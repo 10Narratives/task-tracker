@@ -9,9 +9,6 @@ import (
 	"github.com/go-chi/render"
 )
 
-// TODO: Написать документацию для структуры ответа и интерфейса
-// TODO: Написать документацию для обработчика с помощью Swagger
-
 const op = "http.Delete"
 
 type Response struct {
@@ -23,6 +20,14 @@ type TaskRemover interface {
 	Delete(ctx context.Context, id int64) error
 }
 
+// @Summary Delete task by its ID
+// @Description Permanently remove a task from the system
+// @Produce json
+// @Param id query int true "Task ID"
+// @Success 200 {object} Response
+// @Failure 400 {object} Response "Invalid task ID"
+// @Failure 500 {object} Response "Failed to delete task"
+// @Router /api/task [delete]
 func New(logger *slog.Logger, tr TaskRemover) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		param := r.URL.Query().Get("id")

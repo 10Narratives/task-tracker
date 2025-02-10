@@ -6,18 +6,18 @@ import (
 	"time"
 
 	"github.com/10Narratives/task-tracker/internal/delivery/http/validation"
+	"github.com/10Narratives/task-tracker/internal/lib"
 	"github.com/10Narratives/task-tracker/internal/services/nextdate"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
 )
 
-// TODO: Написать unit-тесты для этого обработчика
 // TODO: Написать документацию для обработчика с помощью Swagger
 
 type URLParams struct {
 	Now    string `json:"now" validate:"required,dateformat"`
 	Date   string `json:"date" validate:"required,dateformat"`
-	Repeat string `json:"repeat" validate:"required,repeat"`
+	Repeat string `json:"repeat" validate:"repeat"`
 }
 
 type Response struct {
@@ -27,11 +27,10 @@ type Response struct {
 
 func New(logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		query := r.URL.Query()
 		params := URLParams{
-			Now:    query.Get("now"),
-			Date:   query.Get("date"),
-			Repeat: query.Get("repeat"),
+			Now:    r.URL.Query().Get("now"),
+			Date:   r.URL.Query().Get("date"),
+			Repeat: r.URL.Query().Get("repeat"),
 		}
 
 		v := validator.New()
@@ -49,8 +48,8 @@ func New(logger *slog.Logger) http.HandlerFunc {
 
 		logger.Info("getting nextdate")
 
-		now, _ := time.Parse("20060102", params.Now)
-		date, _ := time.Parse("20060102", params.Now)
+		now, _ := time.Parse(lib.DateFormat, params.Now)
+		date, _ := time.Parse(lib.DateFormat, params.Now)
 		nextdate := nextdate.NextDate(now, date, params.Repeat)
 		render.JSON(w, r, Response{NextDate: nextdate})
 	}

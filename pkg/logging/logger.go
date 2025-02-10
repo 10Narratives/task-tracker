@@ -1,7 +1,5 @@
 package logging
 
-// TODO: Replace logger into `/pkg`
-
 import (
 	"log"
 	"log/slog"

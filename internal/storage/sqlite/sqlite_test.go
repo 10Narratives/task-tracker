@@ -516,7 +516,7 @@ func TestTaskStorage_ReadByPayload(t *testing.T) {
 					AddRow(3, "20240203", "Test title task 3", "Comment for task 3", "d 7")
 				query := regexp.QuoteMeta("SELECT id, date, title, comment, repeat FROM scheduler WHERE title LIKE ? OR comment LIKE ? ORDER BY date LIMIT ?")
 				dbMock.ExpectQuery(query).
-					WithArgs(payload, payload, 3).
+					WithArgs("%"+payload+"%", "%"+payload+"%", 3).
 					WillReturnRows(rows)
 			}, // SELECT id, date, title, comment, repeat FROM scheduler WHERE date = ? LIMIT ?
 			args: args{
@@ -554,7 +554,7 @@ func TestTaskStorage_ReadByPayload(t *testing.T) {
 				rows := sqlmock.NewRows([]string{"id", "date", "title", "comment", "repeat"})
 				query := regexp.QuoteMeta("SELECT id, date, title, comment, repeat FROM scheduler WHERE title LIKE ? OR comment LIKE ? ORDER BY date LIMIT ?")
 				dbMock.ExpectQuery(query).
-					WithArgs(payload, payload, 3).
+					WithArgs("%"+payload+"%", "%"+payload+"%", 3).
 					WillReturnRows(rows)
 			},
 			args: args{
@@ -573,7 +573,7 @@ func TestTaskStorage_ReadByPayload(t *testing.T) {
 			mocks: func(dbMock sqlmock.Sqlmock) {
 				query := regexp.QuoteMeta("SELECT id, date, title, comment, repeat FROM scheduler WHERE title LIKE ? OR comment LIKE ? ORDER BY date LIMIT ?")
 				dbMock.ExpectQuery(query).
-					WithArgs(payload, payload, 3).
+					WithArgs("%"+payload+"%", "%"+payload+"%", 3).
 					WillReturnError(errors.New("database error"))
 			},
 			args: args{

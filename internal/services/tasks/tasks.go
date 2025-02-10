@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/10Narratives/task-tracker/internal/lib"
 	"github.com/10Narratives/task-tracker/internal/models"
 	"github.com/10Narratives/task-tracker/internal/services/nextdate"
 )
@@ -75,8 +76,8 @@ func (service TaskService) Tasks(ctx context.Context, search string) ([]models.T
 	)
 	if search == "" {
 		tasks, err = service.storage.ReadGroup(ctx)
-	} else if date, isDate := time.Parse("02.01.2006", search); isDate == nil {
-		tasks, err = service.storage.ReadByDate(ctx, date.Format("20060102"))
+	} else if date, isDate := time.Parse(lib.SearchDateFormat, search); isDate == nil {
+		tasks, err = service.storage.ReadByDate(ctx, date.Format(lib.DateFormat))
 	} else {
 		tasks, err = service.storage.ReadByPayload(ctx, search)
 	}
@@ -113,7 +114,7 @@ func (service TaskService) Complete(ctx context.Context, id int64) error {
 		return nil
 	}
 
-	parsed, _ := time.Parse(nextdate.DateLayout, task.Date)
+	parsed, _ := time.Parse(lib.DateFormat, task.Date)
 	task.Date = nextdate.NextDate(time.Now(), parsed, task.Repeat)
 	err = service.storage.Update(ctx, &task)
 	if err != nil {

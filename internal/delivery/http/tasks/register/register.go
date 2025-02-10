@@ -35,6 +35,15 @@ type TaskRegistrar interface {
 	Register(ctx context.Context, date, title, comment, repeat string) (int64, error)
 }
 
+// @Summary Register a new task
+// @Description Create a new task with the provided details
+// @Accept json
+// @Produce json
+// @Param request body Request true "Task data"
+// @Success 200 {object} Response
+// @Failure 400 {object} Response "Invalid request format or missing fields"
+// @Failure 500 {object} Response "Failed to add task"
+// @Router /api/task [post]
 func New(log *slog.Logger, ts TaskRegistrar) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log := log.With(slog.String("op", op))

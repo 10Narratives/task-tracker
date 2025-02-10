@@ -7,6 +7,8 @@ import (
 	"os"
 
 	"github.com/10Narratives/task-tracker/internal/config"
+	mw_logging "github.com/10Narratives/task-tracker/internal/delivery/http/middleware/logging"
+	next "github.com/10Narratives/task-tracker/internal/delivery/http/nextdate"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/complete"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/delete"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/read"
@@ -42,7 +44,7 @@ func New() App {
 
 func (app *App) Run() {
 	app.logger.Info("Starting to create database connection")
-	db, close, err := storage.OpenDB(app.cfg.Storage.DriverName, app.cfg.Storage.DriverName)
+	db, close, err := storage.OpenDB(app.cfg.Storage.DriverName, app.cfg.Storage.DataSourceName)
 	if err != nil {
 		app.logger.Error(err.Error())
 		os.Exit(1)
@@ -51,14 +53,21 @@ func (app *App) Run() {
 	app.logger.Info("database connection created successfully")
 
 	app.logger.Info("starting to initialize task service")
-	store := sqlite.New(db, 10)
-	store.Prepare()
+	store := sqlite.New(db, app.cfg.Storage.PaginationLimit)
+	err = store.Prepare()
+	if err != nil {
+		app.logger.Error("can not prepare database:" + err.Error())
+		os.Exit(1)
+	}
 	service := tasks.New(store)
 	app.logger.Info("task service initialized successfully")
 
 	app.logger.Info("starting to initialize router")
 	router := chi.NewRouter()
+	router.Use(mw_logging.New(app.logger))
+
 	router.Handle("/*", http.StripPrefix("/", http.FileServer(http.Dir(app.cfg.HTTP.FileServerPath))))
+
 	router.Post("/api/task", register.New(app.logger, service))
 	router.Get("/api/tasks", read.New(app.logger, service))
 	router.Get("/api/task", readone.New(app.logger, service))
@@ -66,6 +75,8 @@ func (app *App) Run() {
 	router.Delete("/api/task", delete.New(app.logger, service))
 	router.Post("/api/task/done", complete.New(app.logger, service))
 	router.Delete("/api/task/done", delete.New(app.logger, service))
+
+	router.Get("/api/nextdate", next.New(app.logger))
 
 	router.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL("http://localhost:8000/swagger/doc.json"),
