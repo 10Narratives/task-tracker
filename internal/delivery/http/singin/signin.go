@@ -1,6 +1,7 @@
 package singin
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -37,6 +38,7 @@ func New(log *slog.Logger) http.HandlerFunc {
 		//}
 
 		var req Request
+		fmt.Println("!!!")
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
 			log.Error("failed to decode request body")
@@ -44,7 +46,8 @@ func New(log *slog.Logger) http.HandlerFunc {
 			render.JSON(w, r, Response{Err: "failed to decode request body"})
 			return
 		}
-		log.Info("request body decoded")
+		fmt.Println("!!!")
+		log.Info("request body decoded", slog.Any("request", req))
 
 		v := validator.New()
 		if err := v.Struct(req); err != nil {
@@ -58,11 +61,11 @@ func New(log *slog.Logger) http.HandlerFunc {
 		}
 
 		// TODO: make JWT token
-		pass := os.Getenv("PASSWORD")
+		pass := []byte(os.Getenv("PASSWORD"))
 		token := jwt.New(jwt.SigningMethodHS256)
 		signedToken, err := token.SignedString(pass)
 		if err != nil {
-			log.Error("can not sign jwt token")
+			log.Error("can not sign jwt token " + err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			render.JSON(w, r, Response{Err: "can not sign jwt token"})
 			return

@@ -11,8 +11,10 @@ import (
 	"time"
 
 	"github.com/10Narratives/task-tracker/internal/config"
+	mw_auth "github.com/10Narratives/task-tracker/internal/delivery/http/middleware/auth"
 	mw_logging "github.com/10Narratives/task-tracker/internal/delivery/http/middleware/logging"
 	next "github.com/10Narratives/task-tracker/internal/delivery/http/nextdate"
+	"github.com/10Narratives/task-tracker/internal/delivery/http/singin"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/complete"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/delete"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/read"
@@ -72,13 +74,19 @@ func (app *App) Run() {
 
 	router.Handle("/*", http.StripPrefix("/", http.FileServer(http.Dir(app.cfg.HTTP.FileServerPath))))
 
-	router.Post("/api/task", register.New(app.logger, service))
-	router.Get("/api/tasks", read.New(app.logger, service))
-	router.Get("/api/task", readone.New(app.logger, service))
-	router.Put("/api/task", update.New(app.logger, service))
-	router.Delete("/api/task", delete.New(app.logger, service))
-	router.Post("/api/task/done", complete.New(app.logger, service))
-	router.Delete("/api/task/done", delete.New(app.logger, service))
+	router.Post("/api/signin", singin.New(app.logger))
+
+	router.Route("/api", func(r chi.Router) {
+		r.Use(mw_auth.Auth)
+
+		router.Post("/api/task", register.New(app.logger, service))
+		router.Get("/api/tasks", read.New(app.logger, service))
+		router.Get("/api/task", readone.New(app.logger, service))
+		router.Put("/api/task", update.New(app.logger, service))
+		router.Delete("/api/task", delete.New(app.logger, service))
+		router.Post("/api/task/done", complete.New(app.logger, service))
+		router.Delete("/api/task/done", delete.New(app.logger, service))
+	})
 
 	router.Get("/api/nextdate", next.New(app.logger))
 
@@ -88,10 +96,6 @@ func (app *App) Run() {
 
 	app.logger.Info("router initialized successfully")
 
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-
-	// FIXME: Fix graceful stop
 	srv := &http.Server{
 		Addr:         app.cfg.HTTP.Address + ":" + app.cfg.HTTP.Port,
 		Handler:      router,
@@ -101,10 +105,13 @@ func (app *App) Run() {
 	}
 
 	go func() {
-		if err := srv.ListenAndServe(); err != nil {
-			app.logger.Error("can not start up http server", slog.String("occurred:", err.Error()))
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			app.logger.Error("failed to start HTTP server", slog.String("error", err.Error()))
 		}
 	}()
+
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGTERM)
 
 	app.logger.Info("server started")
 

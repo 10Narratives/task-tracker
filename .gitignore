@@ -31,5 +31,4 @@ go.work.sum
 config
 
 # Databases
-*.db
-sqlite3
+storage/scheduler.db
