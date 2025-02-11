@@ -1,6 +1,8 @@
 package main
 
-import "github.com/10Narratives/task-tracker/internal/app"
+import (
+	"github.com/10Narratives/task-tracker/internal/app"
+)
 
 // @title Task Tracker App
 // @version 1.0
