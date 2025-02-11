@@ -1,10 +1,14 @@
 package app
 
 import (
+	"context"
 	"log"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/10Narratives/task-tracker/internal/config"
 	mw_logging "github.com/10Narratives/task-tracker/internal/delivery/http/middleware/logging"
@@ -43,7 +47,7 @@ func New() App {
 }
 
 func (app *App) Run() {
-	app.logger.Info("Starting to create database connection")
+	app.logger.Info("starting to create database connection")
 	db, close, err := storage.OpenDB(app.cfg.Storage.DriverName, app.cfg.Storage.DataSourceName)
 	if err != nil {
 		app.logger.Error(err.Error())
@@ -84,8 +88,37 @@ func (app *App) Run() {
 
 	app.logger.Info("router initialized successfully")
 
-	fullAddr := app.cfg.HTTP.Address + ":" + app.cfg.HTTP.Port
-	if err := http.ListenAndServe(fullAddr, router); err != nil {
-		app.logger.Error("Can not start up http server", slog.String("occurred", err.Error()))
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	// FIXME: Fix graceful stop
+	srv := &http.Server{
+		Addr:         app.cfg.HTTP.Address + ":" + app.cfg.HTTP.Port,
+		Handler:      router,
+		ReadTimeout:  app.cfg.HTTP.Timeout,
+		WriteTimeout: app.cfg.HTTP.Timeout,
+		IdleTimeout:  app.cfg.HTTP.IdleTimeout,
 	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil {
+			app.logger.Error("can not start up http server", slog.String("occurred:", err.Error()))
+		}
+	}()
+
+	app.logger.Info("server started")
+
+	<-done
+	app.logger.Info("stopping server")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		app.logger.Error("failed to stop server")
+
+		return
+	}
+
+	app.logger.Info("server stopped")
 }
