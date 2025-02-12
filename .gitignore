@@ -23,3 +23,12 @@ go.work.sum
 
 # env file
 .env
+
+# Local directories
+.vscode
+
+# Configuration files
+config
+
+# Databases
+storage/

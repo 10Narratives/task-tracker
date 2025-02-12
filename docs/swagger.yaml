@@ -1,0 +1,253 @@
+basePath: /
+definitions:
+  complete.Response:
+    properties:
+      error:
+        type: string
+    type: object
+  delete.Response:
+    properties:
+      error:
+        type: string
+    type: object
+  models.Task:
+    properties:
+      comment:
+        type: string
+      date:
+        type: string
+      id:
+        type: integer
+      repeat:
+        type: string
+      title:
+        type: string
+    type: object
+  read.Response:
+    properties:
+      error:
+        type: string
+      tasks:
+        items:
+          $ref: '#/definitions/models.Task'
+        type: array
+    type: object
+  readone.Response:
+    properties:
+      comment:
+        type: string
+      date:
+        type: string
+      error:
+        type: string
+      id:
+        type: string
+      repeat:
+        type: string
+      title:
+        type: string
+    type: object
+  register.Request:
+    properties:
+      comment:
+        type: string
+      date:
+        type: string
+      repeat:
+        type: string
+      title:
+        type: string
+    required:
+    - date
+    - title
+    type: object
+  register.Response:
+    properties:
+      error:
+        type: string
+      id:
+        type: string
+    type: object
+  update.Request:
+    properties:
+      comment:
+        type: string
+      date:
+        type: string
+      id:
+        type: string
+      repeat:
+        type: string
+      title:
+        type: string
+    required:
+    - date
+    - id
+    - title
+    type: object
+  update.Response:
+    properties:
+      error:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: REST API server for TODO Application
+  title: Task Tracker App
+  version: "1.0"
+paths:
+  /api/task:
+    delete:
+      description: Permanently remove a task from the system
+      parameters:
+      - description: Task ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/delete.Response'
+        "400":
+          description: Invalid task ID
+          schema:
+            $ref: '#/definitions/delete.Response'
+        "500":
+          description: Failed to delete task
+          schema:
+            $ref: '#/definitions/delete.Response'
+      summary: Delete task by its ID
+    get:
+      description: Retrieve a task using its unique identifier
+      parameters:
+      - description: Task ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/readone.Response'
+        "400":
+          description: Invalid task ID
+          schema:
+            $ref: '#/definitions/readone.Response'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/readone.Response'
+        "500":
+          description: Failed to find task by ID
+          schema:
+            $ref: '#/definitions/readone.Response'
+      summary: Get task by ID
+    post:
+      consumes:
+      - application/json
+      description: Create a new task with the provided details
+      parameters:
+      - description: Task data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/register.Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/register.Response'
+        "400":
+          description: Invalid request format or missing fields
+          schema:
+            $ref: '#/definitions/register.Response'
+        "500":
+          description: Failed to add task
+          schema:
+            $ref: '#/definitions/register.Response'
+      summary: Register a new task
+    put:
+      consumes:
+      - application/json
+      description: Modify the details of an existing task by its ID
+      parameters:
+      - description: Task data to update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/update.Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/update.Response'
+        "400":
+          description: Invalid request format or missing fields
+          schema:
+            $ref: '#/definitions/update.Response'
+        "500":
+          description: Failed to update task
+          schema:
+            $ref: '#/definitions/update.Response'
+      summary: Update an existing task
+  /api/task/done:
+    post:
+      description: Mark task as completed, either by deleting it or modifying its
+        deadline
+      parameters:
+      - description: Task ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/complete.Response'
+        "400":
+          description: Invalid task ID
+          schema:
+            $ref: '#/definitions/complete.Response'
+        "500":
+          description: Failed to complete task
+          schema:
+            $ref: '#/definitions/complete.Response'
+      summary: Complete task by its ID
+  /api/tasks:
+    get:
+      description: Retrieve tasks optionally filtered by a search query
+      parameters:
+      - description: Search filter
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/read.Response'
+        "500":
+          description: Failed to read tasks
+          schema:
+            $ref: '#/definitions/read.Response'
+      summary: Get tasks
+swagger: "2.0"
