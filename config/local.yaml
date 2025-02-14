@@ -1,0 +1,11 @@
+env: "local" # local / dev / prod
+storage:
+  driver: "sqlite3"
+  dsn: "storage/scheduler.db"
+  limit: 10
+http_server: 
+  address: "localhost"
+  port: "8000"
+  timeout: 4s
+  idle_timeout: 60s
+  file_server_path: "./web"
