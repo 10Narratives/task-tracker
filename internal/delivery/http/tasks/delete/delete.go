@@ -35,7 +35,7 @@ func New(logger *slog.Logger, tr TaskRemover) http.HandlerFunc {
 
 		id, err := strconv.Atoi(param)
 		if err != nil {
-			logger.Error("gotten invalid id")
+			logger.Error("gotten invalid id" + err.Error())
 			w.WriteHeader(http.StatusBadRequest)
 			render.JSON(w, r, Response{Err: "gotten invalid id"})
 			return

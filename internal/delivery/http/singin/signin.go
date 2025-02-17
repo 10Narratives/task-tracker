@@ -1,7 +1,6 @@
 package singin
 
 import (
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -38,15 +37,13 @@ func New(log *slog.Logger) http.HandlerFunc {
 		//}
 
 		var req Request
-		fmt.Println("!!!")
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
-			log.Error("failed to decode request body")
+			log.Error("failed to decode request body" + err.Error())
 			w.WriteHeader(http.StatusBadRequest)
 			render.JSON(w, r, Response{Err: "failed to decode request body"})
 			return
 		}
-		fmt.Println("!!!")
 		log.Info("request body decoded", slog.Any("request", req))
 
 		v := validator.New()
