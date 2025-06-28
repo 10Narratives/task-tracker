@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/10Narratives/task-tracker/internal/config"
+	trackercfg "github.com/10Narratives/task-tracker/internal/config/tracker"
 	mw_auth "github.com/10Narratives/task-tracker/internal/delivery/http/middleware/auth"
 	mw_logging "github.com/10Narratives/task-tracker/internal/delivery/http/middleware/logging"
 	next "github.com/10Narratives/task-tracker/internal/delivery/http/nextdate"
@@ -34,7 +34,7 @@ import (
 )
 
 type App struct {
-	cfg    *config.Config
+	cfg    *trackercfg.Config
 	logger *slog.Logger
 }
 
@@ -43,7 +43,7 @@ func New() App {
 		log.Fatal("Can not load environment variables.")
 	}
 
-	cfg := config.MustConfig()
+	cfg := trackercfg.MustLoad()
 	logger := sl.MustLogger(
 		sl.WithFormat(cfg.Logger.Format),
 		sl.WithOutput(cfg.Logger.Output),
