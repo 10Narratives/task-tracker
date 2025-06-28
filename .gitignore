@@ -26,9 +26,3 @@ go.work.sum
 
 # Local directories
 .vscode
-
-# Configuration files
-config
-
-# Databases
-storage/
