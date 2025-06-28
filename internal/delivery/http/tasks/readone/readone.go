@@ -76,6 +76,5 @@ func New(logger *slog.Logger, tr TaskReader) http.HandlerFunc {
 			Comment: task.Comment,
 			Repeat:  task.Repeat,
 		})
-		return
 	}
 }
