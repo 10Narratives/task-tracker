@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/10Narratives/task-tracker/internal/config"
+	trackercfg "github.com/10Narratives/task-tracker/internal/config/tracker"
 	mw_auth "github.com/10Narratives/task-tracker/internal/delivery/http/middleware/auth"
 	mw_logging "github.com/10Narratives/task-tracker/internal/delivery/http/middleware/logging"
 	next "github.com/10Narratives/task-tracker/internal/delivery/http/nextdate"
@@ -21,10 +21,11 @@ import (
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/readone"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/register"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/update"
+	"github.com/10Narratives/task-tracker/internal/lib/logging/sl"
+
 	"github.com/10Narratives/task-tracker/internal/services/tasks"
 	"github.com/10Narratives/task-tracker/internal/storage"
 	"github.com/10Narratives/task-tracker/internal/storage/sqlite"
-	"github.com/10Narratives/task-tracker/pkg/logging"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 
@@ -33,7 +34,7 @@ import (
 )
 
 type App struct {
-	cfg    *config.Config
+	cfg    *trackercfg.Config
 	logger *slog.Logger
 }
 
@@ -42,8 +43,12 @@ func New() App {
 		log.Fatal("Can not load environment variables.")
 	}
 
-	cfg := config.MustConfig()
-	logger := logging.MustLogger(cfg.Env)
+	cfg := trackercfg.MustLoad()
+	logger := sl.MustLogger(
+		sl.WithFormat(cfg.Logger.Format),
+		sl.WithOutput(cfg.Logger.Output),
+		sl.WithLevel(cfg.Logger.Level),
+	)
 
 	return App{cfg, logger}
 }

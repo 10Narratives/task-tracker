@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [ '1.23', '1.24' ]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ matrix.go-version }}
+        cache: true
+        cache-dependency-path: go.sum
+
+    - name: Run tests
+      run: |
+        if [ $(go list ./... | wc -l) -gt 0 ]; then
+          go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+        else
+          echo "No tests found. Creating empty coverage file."
+          echo "mode: atomic" > coverage.txt
+        fi
+
+    - name: Validate coverage file
+      run: |
+        if [ ! -s coverage.txt ] || ! grep -q "mode: atomic" coverage.txt; then
+          echo "mode: atomic" > coverage.txt
+        fi
+        echo "Coverage file content:"
+        head -n 5 coverage.txt || true
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: coverage.txt
+        fail_ci_if_error: false
+      if: ${{ matrix.go-version == '1.24' }} 
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v4
+      with:
+        go-version: '1.24'
+
+    - name: Install staticcheck
+      run: go install honnef.co/go/tools/cmd/staticcheck@latest
+
+    - name: Run staticcheck
+      run: staticcheck ./...
+
+    - name: Run go vet
+      run: go vet ./...

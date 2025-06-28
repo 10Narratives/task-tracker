@@ -44,6 +44,5 @@ func New(log *slog.Logger, tr TaskReader) http.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			render.JSON(w, r, Response{Tasks: tasks})
 		}
-		return
 	}
 }
