@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_NAME: task-tracker
+    steps:
+    - uses: actions/checkout@v4
+      
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: Build binaries
+      run: |
+        GOOS=linux GOARCH=amd64 go build -o ${{ env.PROJECT_NAME }}-linux-amd64 .
+        GOOS=darwin GOARCH=arm64 go build -o ${{ env.PROJECT_NAME }}-darwin-arm64 .
+        GOOS=windows GOARCH=amd64 go build -o ${{ env.PROJECT_NAME }}-windows-amd64.exe .
+
+    - name: Upload release assets
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ${{ env.PROJECT_NAME }}-linux-amd64
+          ${{ env.PROJECT_NAME }}-darwin-arm64
+          ${{ env.PROJECT_NAME }}-windows-amd64.exe
