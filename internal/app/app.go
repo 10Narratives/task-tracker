@@ -21,10 +21,11 @@ import (
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/readone"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/register"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/update"
+	"github.com/10Narratives/task-tracker/internal/lib/logging/sl"
+
 	"github.com/10Narratives/task-tracker/internal/services/tasks"
 	"github.com/10Narratives/task-tracker/internal/storage"
 	"github.com/10Narratives/task-tracker/internal/storage/sqlite"
-	"github.com/10Narratives/task-tracker/pkg/logging"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 
@@ -43,7 +44,11 @@ func New() App {
 	}
 
 	cfg := config.MustConfig()
-	logger := logging.MustLogger(cfg.Env)
+	logger := sl.MustLogger(
+		sl.WithFormat(cfg.Logger.Format),
+		sl.WithOutput(cfg.Logger.Output),
+		sl.WithLevel(cfg.Logger.Level),
+	)
 
 	return App{cfg, logger}
 }

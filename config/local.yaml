@@ -3,6 +3,10 @@ storage:
   driver: "sqlite3"
   dsn: "storage/scheduler.db"
   limit: 10
+logging:
+  level: info
+  format: pretty
+  output: stdout
 http_server: 
   address: "localhost"
   port: "8000"
