@@ -30,6 +30,8 @@ type Config struct {
 
 	// HTTP contains the configuration settings for the HTTP server.
 	HTTP HTTPServerConfig `yaml:"http_server"`
+
+	Logger LoggerConfig `yaml:"logging"`
 }
 
 // StorageConfig holds configuration values for the storage
@@ -59,6 +61,12 @@ type HTTPServerConfig struct {
 
 	// FileServerPath defines path to web pages
 	FileServerPath string `yaml:"file_server_path" env-default:"./web"`
+}
+
+type LoggerConfig struct {
+	Level  string `yaml:"level" env-default:"error"`
+	Format string `yaml:"format" env-default:"json"`
+	Output string `yaml:"output" env-default:"file"`
 }
 
 // MustConfig loads the application configuration from a YAML file specified by the CONFIG_PATH environment variable.
