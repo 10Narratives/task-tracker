@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/10Narratives/task-tracker/internal/lib/logging/handlers/slogdiscard"
 	"github.com/10Narratives/task-tracker/internal/lib/logging/handlers/slogpretty"
-	"github.com/10Narratives/task-tracker/pkg/logging/slogdiscard"
 	"github.com/natefinch/lumberjack"
 )
 
