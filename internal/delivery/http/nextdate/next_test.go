@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	next "github.com/10Narratives/task-tracker/internal/delivery/http/nextdate"
-	"github.com/10Narratives/task-tracker/pkg/logging/slogdiscard"
+	"github.com/10Narratives/task-tracker/internal/lib/logging/handlers/slogdiscard"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 )

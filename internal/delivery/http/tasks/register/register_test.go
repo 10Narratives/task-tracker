@@ -10,7 +10,7 @@ import (
 
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/register"
 	"github.com/10Narratives/task-tracker/internal/delivery/http/tasks/register/mocks"
-	"github.com/10Narratives/task-tracker/pkg/logging/slogdiscard"
+	"github.com/10Narratives/task-tracker/internal/lib/logging/handlers/slogdiscard"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
