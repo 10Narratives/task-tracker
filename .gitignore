@@ -26,3 +26,5 @@ go.work.sum
 
 # Local directories
 .vscode
+
+storage/*.db
