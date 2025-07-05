@@ -34,7 +34,7 @@ func New(db *sql.DB, limit uint) TaskStorage {
 // - error: An error if the table creation or index setup fails.
 func (s TaskStorage) Prepare() error {
 	query := `
-		CREATE TABLE IF NOT EXISTS scheduler (
+	CREATE TABLE IF NOT EXISTS scheduler (
     	id INTEGER PRIMARY KEY AUTOINCREMENT,
     	date TEXT NOT NULL,
     	title TEXT NOT NULL,

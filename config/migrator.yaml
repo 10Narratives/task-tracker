@@ -1,0 +1,8 @@
+migrate:
+  storage_path: storage/scheduler.db
+  migrations_path: migrations
+  migrations_table: 
+logging:
+  level: info
+  format: pretty
+  output: stdout

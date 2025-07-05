@@ -4,15 +4,16 @@ import (
 	"time"
 
 	"github.com/10Narratives/task-tracker/internal/config"
+	commoncfg "github.com/10Narratives/task-tracker/internal/config/common"
 )
 
 // Config represents the root configuration structure for the task tracker application.
 // It contains nested configurations for storage, HTTP server, and logging components.
 // Fields are loaded from YAML configuration files and can be overridden by environment variables.
 type Config struct {
-	Storage StorageConfig    `yaml:"storage"`     // Database storage configuration
-	HTTP    HTTPServerConfig `yaml:"http_server"` // HTTP server configuration
-	Logger  LoggerConfig     `yaml:"logging"`     // Logging system configuration
+	Storage StorageConfig          `yaml:"storage"`     // Database storage configuration
+	HTTP    HTTPServerConfig       `yaml:"http_server"` // HTTP server configuration
+	Logger  commoncfg.LoggerConfig `yaml:"logging"`     // Logging system configuration
 }
 
 // StorageConfig defines parameters for database connection and operation.
@@ -29,13 +30,6 @@ type HTTPServerConfig struct {
 	Timeout        time.Duration `yaml:"timeout" env-default:"4s"`             // Request timeout duration
 	IdleTimeout    time.Duration `yaml:"idle_timeout" env-default:"60s"`       // Keep-alive connection timeout
 	FileServerPath string        `yaml:"file_server_path" env-default:"./web"` // Path to static web assets directory
-}
-
-// LoggerConfig defines parameters for log output and formatting.
-type LoggerConfig struct {
-	Level  string `yaml:"level" env-default:"error"` // Log verbosity level (debug, info, warn, error)
-	Format string `yaml:"format" env-default:"json"` // Log output format (text, json)
-	Output string `yaml:"output" env-default:"file"` // Log destination (stdout, stderr, file)
 }
 
 var loader = config.ConfigLoader[Config]{}
